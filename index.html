@@ -1,0 +1,2559 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2C3E50">
+  <title>מרחב עיבוד משותף — לזכר ימנו בנימין זלקה ז״ל</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-cream: #F7F4EC;
+      --bg-cream-dark: #EFE8D9;
+      --primary: #B89968;
+      --primary-dark: #8A7040;
+      --secondary: #6B8E5F;
+      --secondary-dark: #5A7A50;
+      --accent: #8A7040;
+      --heart: #C5625E;
+      --head: #5F7B96;
+      --hands: #6B8E5F;
+      --text-dark: #2C3E50;
+      --text-medium: #4A5A6B;
+      --text-light: #7A8898;
+      --surface: #ffffff;
+      --surface-shadow: rgba(44, 62, 80, 0.06);
+      --surface-shadow-strong: rgba(44, 62, 80, 0.14);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overscroll-behavior: none;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-cream-dark) 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* ===== Layout ===== */
+    #app {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      padding-top: 12px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    /* ===== Persistent group header ===== */
+    .group-header {
+      display: none;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto 14px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      box-shadow: 0 2px 10px var(--surface-shadow);
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+    }
+
+    .group-header.visible {
+      display: flex;
+    }
+
+    .group-header .gh-badge {
+      background: linear-gradient(135deg, var(--accent) 0%, #c19b5a 100%);
+      color: var(--text-dark);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .group-header .gh-members {
+      color: var(--text-medium);
+      line-height: 1.4;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .group-header .gh-members .me {
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 20px 0;
+      animation: fadeIn var(--transition);
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Typography ===== */
+    h1, h2, h3 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text-dark);
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 5vw, 2.1rem);
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(1.3rem, 4vw, 1.6rem);
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: var(--text-medium);
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+    }
+
+    .lead {
+      font-size: 1.15rem;
+      color: var(--text-dark);
+    }
+
+    .hint {
+      font-size: 0.92rem;
+      color: var(--text-light);
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 32px 26px;
+      width: 100%;
+      box-shadow: 0 8px 32px var(--surface-shadow), 0 2px 8px var(--surface-shadow);
+      text-align: center;
+    }
+
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .icon-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 6px 20px rgba(193, 123, 123, 0.35);
+    }
+
+    .icon-circle.sage {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      box-shadow: 0 6px 20px rgba(143, 168, 136, 0.35);
+    }
+
+    .icon-circle.gold {
+      background: linear-gradient(135deg, var(--accent) 0%, #c19b5a 100%);
+      box-shadow: 0 6px 20px rgba(217, 178, 111, 0.35);
+    }
+
+    /* ===== Buttons ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 54px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 4px 16px rgba(193, 123, 123, 0.35);
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(193, 123, 123, 0.45);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(193, 123, 123, 0.35);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .btn.sage {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+      box-shadow: 0 4px 16px rgba(143, 168, 136, 0.35);
+    }
+
+    .btn.sage:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(143, 168, 136, 0.45);
+    }
+
+    .btn.secondary {
+      background: var(--surface);
+      color: var(--text-dark);
+      box-shadow: 0 2px 8px var(--surface-shadow);
+      border: 2px solid var(--bg-cream-dark);
+    }
+
+    .btn.secondary:hover:not(:disabled) {
+      box-shadow: 0 4px 12px var(--surface-shadow-strong);
+    }
+
+    /* ===== Forms ===== */
+    .input-group {
+      width: 100%;
+      margin: 16px 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+      text-align: start;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      min-height: 54px;
+      padding: 14px 18px;
+      border: 2px solid var(--bg-cream-dark);
+      border-radius: var(--radius-md);
+      background: var(--bg-cream);
+      color: var(--text-dark);
+      font-family: inherit;
+      font-size: 1.1rem;
+      transition: border-color var(--transition), background var(--transition);
+      text-align: start;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--surface);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-light);
+    }
+
+    /* ===== Spinner ===== */
+    .spinner {
+      width: 54px;
+      height: 54px;
+      border: 5px solid var(--bg-cream-dark);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== Group members list ===== */
+    .member-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+      width: 100%;
+    }
+
+    .member-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-cream);
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 1.05rem;
+      animation: slideIn 0.4s ease backwards;
+    }
+
+    .member-list li:nth-child(1) { animation-delay: 0.05s; }
+    .member-list li:nth-child(2) { animation-delay: 0.15s; }
+    .member-list li:nth-child(3) { animation-delay: 0.25s; }
+    .member-list li:nth-child(4) { animation-delay: 0.35s; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .member-list .member-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .member-list .member-icon:nth-child(odd) { background: var(--secondary); }
+
+    .group-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--text-dark);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    /* ===== Poem ===== */
+    .poem {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      margin: 20px 0;
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.1rem;
+      line-height: 1.9;
+      color: var(--text-dark);
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .poem .stanza {
+      margin-bottom: 12px;
+    }
+
+    .poem .stanza:last-child {
+      margin-bottom: 0;
+    }
+
+    .credit {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    .credit a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .credit a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Instructions boxes ===== */
+    .instructions-box {
+      width: 100%;
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin: 10px 0;
+      text-align: start;
+    }
+
+    .instructions-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .instructions-box ul {
+      padding-inline-start: 8px;
+    }
+
+    .instructions-box li {
+      margin-bottom: 8px;
+    }
+
+    .instructions-box li:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ===== Timers ===== */
+    .timers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    .timer-box {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 20px 14px;
+      text-align: center;
+    }
+
+    .timer-box.group-timer {
+      background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-cream-dark) 100%);
+    }
+
+    .timer-label {
+      font-size: 0.9rem;
+      color: var(--text-medium);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .timer-value {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .timer-value.warning {
+      color: var(--primary);
+      animation: pulse 1s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .timer-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .btn.small {
+      min-height: 44px;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      margin-top: 8px;
+    }
+
+    /* ===== Dashboard ===== */
+    .dashboard {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Dashboard grid — single column, stacked vertically.
+       Panels in order: admin, moodSummary, actionsWall, actionsSummary, feedbackSummary.
+       Each panel is a standalone "page" on the projector view. */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      min-height: calc(100vh - 48px);
+      min-height: calc(100dvh - 48px);
+    }
+
+    /* Display view (projector) — hide admin panel. */
+    body.dashboard-display .admin-panel { display: none; }
+    body.dashboard-display .summary-panel h2,
+    body.dashboard-display .mood-panel h2,
+    body.dashboard-display .collage-panel h2 { font-size: 1.6rem; }
+    body.dashboard-display .summary-text { font-size: 1.25rem; line-height: 2; }
+
+    /* Floating toggle between control and display dashboard views */
+    .view-toggle-btn {
+      position: fixed;
+      top: 16px;
+      inset-inline-start: 16px;
+      z-index: 100;
+      background: var(--text-dark);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(61, 47, 42, 0.25);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .view-toggle-btn:hover,
+    .view-toggle-btn:focus-visible {
+      transform: translateY(-2px);
+      background: var(--primary);
+      outline: none;
+    }
+    body.dashboard-display .view-toggle-btn {
+      opacity: 0.4;
+    }
+    body.dashboard-display .view-toggle-btn:hover {
+      opacity: 1;
+    }
+
+    /* Summary panel styles */
+    .summary-panel .summary-text {
+      font-size: 1.08rem;
+      line-height: 1.9;
+      color: var(--text-dark);
+      padding: 14px 8px;
+      white-space: pre-wrap;
+    }
+    .summary-panel .summary-meta {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .summary-panel .empty-state {
+      text-align: center;
+      padding: 36px 20px;
+      color: var(--text-medium);
+      font-size: 1rem;
+    }
+
+    .panel {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 6px 24px var(--surface-shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .admin-panel .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-medium);
+      margin-top: 4px;
+    }
+
+    .group-preview {
+      background: var(--bg-cream);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 16px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .group-preview h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .group-preview .group {
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+    }
+
+    .group-preview .group strong {
+      color: var(--primary);
+      display: inline-block;
+      margin-inline-end: 8px;
+    }
+
+    .panel-wide {
+      grid-column: 1 / -1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-dark);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 6px 20px var(--surface-shadow-strong);
+      font-size: 0.95rem;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition), transform var(--transition);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, -8px);
+    }
+
+    /* ===== Utility ===== */
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .warning-box {
+      background: #fff4e5;
+      border: 2px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin: 14px 0;
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      text-align: start;
+    }
+
+    .debug-banner {
+      position: fixed;
+      top: 8px;
+      left: 8px;
+      background: var(--accent);
+      color: var(--text-dark);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 999;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Persistent group header (visible after allocation, on participant screens) -->
+    <div class="group-header" id="group-header" role="banner" aria-label="פרטי הקבוצה שלי">
+      <span class="gh-badge" id="gh-badge">קבוצה —</span>
+      <div class="gh-members" id="gh-members"></div>
+    </div>
+
+    <!-- ===== Screen 1: Welcome ===== -->
+    <section id="screen-welcome" class="screen active" aria-label="הרשמה">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true"><i class="fas fa-dove"></i></div>
+          <h1>מרחב עיבוד משותף</h1>
+          <p class="lead">לזכרו של ימנו בנימין זלקה ז״ל</p>
+        </div>
+        <p>במקור, הסדנה הזו תוכננה לעסוק במעבר מתקופת המלחמה חזרה לשגרה.</p>
+        <p>בליל יום העצמאות האחרון — כאן בעיר שלנו — נדקר <strong>ימנו בנימין זלקה ז״ל</strong>, ונפטר מפצעיו יומיים אחר כך. החלטנו להקדיש את המפגש כולו לעיבוד האירוע הזה. מתוך ההקשר הזה נדבר בהמשך גם על בינה מלאכותית: כיצד היא יכולה לתווך תהליכים קבוצתיים כמו זה שאנחנו עוברים/ות כרגע.</p>
+        <p style="color: var(--text-medium); font-size: 0.95rem;">הסדנה תתנהל כולה דרך הטלפון שלכם/ן, בקבוצות של 3-4. <strong>כל ההוראות יופיעו מסך אחרי מסך</strong> — אין צורך להתאמץ לעקוב. פשוט קראו את מה שכתוב ופעלו לפיו.</p>
+        <form id="form-welcome">
+          <div class="input-group">
+            <label for="name-input">השם המלא שלך</label>
+            <input type="text" id="name-input" name="name" placeholder="לדוגמה: רונית כהן" autocomplete="name" required minlength="2">
+          </div>
+          <button type="submit" class="btn" id="btn-submit-name">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>הצטרפות</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== Screen 2: Waiting ===== -->
+    <section id="screen-waiting" class="screen" aria-label="ממתין לחלוקת קבוצות">
+      <div class="card">
+        <div class="card-header">
+          <div class="spinner" aria-hidden="true"></div>
+          <h1>ממתינים לכולם</h1>
+          <p class="lead" id="waiting-name">שלום, <span></span></p>
+        </div>
+        <p>ברגע שכל המשתתפים/ות יירשמו, תקבלו את הקבוצה שלכם/ן.</p>
+        <p class="hint">עוד מעט מתחילים.</p>
+      </div>
+    </section>
+
+    <!-- ===== Screen 3: Group Display ===== -->
+    <section id="screen-group" class="screen" aria-label="הקבוצה שלך">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle sage" aria-hidden="true"><i class="fas fa-users"></i></div>
+          <span class="group-badge" id="group-name-badge">קבוצה</span>
+          <h1>הקבוצה שלך נוצרה</h1>
+        </div>
+        <ul class="member-list" id="group-members-list" aria-label="חברי הקבוצה"></ul>
+        <p>מצאו זה את זו/ה בחדר. קחו כוס שתייה, שבו יחד בפינה נעימה. לא חייבים/ות כלום עוד — רק להתיישב.</p>
+        <p style="color: var(--text-medium); font-size: 0.92rem;">כשכולכם/ן מוכנים/ות, מישהו/י אחד/ת מכם/ן לוחצ/ת על הכפתור. כולכם/ן תתקדמו יחד לשלב הבא.</p>
+        <button type="button" class="btn sage" id="btn-group-ready">
+          <i class="fas fa-check" aria-hidden="true"></i>
+          <span>מצאנו ואנחנו מוכנים</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== Screen 4: Memorial (candle + photo + name) ===== -->
+    <section id="screen-memorial" class="screen" aria-label="זיכרון">
+      <div class="card" style="text-align:center;">
+        <div style="margin: 8px auto 20px; max-width: 140px;">
+          <img src="assets/candle.png" alt="נר זיכרון" style="width: 100%; height: auto; display: block;">
+        </div>
+        <div style="margin: 0 auto 24px; max-width: 220px;">
+          <img src="assets/yemenu.jpg" alt="ימנו בנימין זלקה ז״ל" style="width: 100%; height: auto; border-radius: 50%; border: 4px solid var(--surface); box-shadow: 0 4px 24px var(--surface-shadow-strong); display: block;">
+        </div>
+        <h1 style="font-family: 'Frank Ruhl Libre', serif; font-size: 1.5rem; margin: 0 0 4px;">ימנו בנימין זלקה ז״ל</h1>
+        <p style="color: var(--text-medium); font-size: 1rem; margin: 0 0 24px;">2004 — 2026</p>
+        <p style="font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; font-style: italic; color: var(--primary-dark); margin: 24px 0;">יהי זכרו ברוך</p>
+        <p style="color: var(--text-medium); font-size: 0.92rem; margin: 24px 0 20px;">תנו לעצמכם/ן רגע בשקט. כשכולכם/ן מוכנים/ות — ממשיכים יחד.</p>
+        <button type="button" class="btn" id="btn-memorial-next">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i>
+          <span>ממשיכים</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== Screen 5: Memory (5 quotes) ===== -->
+    <section id="screen-memory" class="screen" aria-label="עדויות על ימנו">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle gold" aria-hidden="true"><i class="fas fa-book-open"></i></div>
+          <h1>רגע של זיכרון</h1>
+        </div>
+
+        <div class="instructions-box" style="background: var(--bg-cream-dark); border-right: 4px solid var(--primary);">
+          <p><strong>תבחרו מי יקריא.</strong> אחד/ת מחברי/ות הקבוצה יקריא/תקריא את הטקסט בקול לשאר הקבוצה. כשההקראה מסתיימת — לחצו "קראנו".</p>
+        </div>
+
+        <div class="poem" style="text-align: right; padding: 24px 22px;">
+          <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;"><em>ימנו בנימין זלקה ז״ל</em> היה בן 21.</p>
+          <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;">הוא עבד בפיצה האט ברחוב העצמאות בפתח תקווה במשך חמש שנים — התחיל כשליח על אופנוע בגיל 16, ובשנים האחרונות היה אחראי משמרת.</p>
+          <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 22px;">בליל יום העצמאות האחרון, בתום משמרת, ביקש מקבוצת נערים להפסיק לרסס קצף בתוך הפיצרייה. הם המתינו לו בחוץ כשסיים את המשמרת ודקרו אותו. הוא נפטר מפציעותיו יומיים אחר כך בבית החולים בילינסון. מאות ליוו אותו למנוחות בבית העלמין ירקון.</p>
+
+          <blockquote style="margin: 18px 0; padding: 14px 18px; background: var(--surface); border-right: 3px solid var(--primary); border-radius: 6px; text-align: right;">
+            <p style="margin: 0 0 6px; font-size: 0.98rem; line-height: 1.8;">"הוא היה ילד טוב וחייכן, חבר אמיתי שעוזר לכל מי שצריך. בחור שידע ואהב לעבוד, חיפש תמיד לתת מעצמו יותר."</p>
+            <cite style="display: block; font-size: 0.85rem; color: var(--text-light); font-style: normal;">— תמיר זילבר, מנהל הסניף שבו עבד</cite>
+          </blockquote>
+
+          <blockquote style="margin: 18px 0; padding: 14px 18px; background: var(--surface); border-right: 3px solid var(--primary); border-radius: 6px; text-align: right;">
+            <p style="margin: 0 0 6px; font-size: 0.98rem; line-height: 1.8;">"הוא היה האדם המתוק והעדין ביותר, תמיד חייך, תמיד היה נדיב כלפי כולם. אמרתי לאחותו, שבועיים לפני, שהוא האדם היקר והאהוב עליי בעולם. הלב שלי נקרע לגזרים. אני מתחרט שלא הייתי שם להגן עליו."</p>
+            <cite style="display: block; font-size: 0.85rem; color: var(--text-light); font-style: normal;">— דוד, חבר קרוב של ימנו</cite>
+          </blockquote>
+
+          <blockquote style="margin: 18px 0; padding: 14px 18px; background: var(--surface); border-right: 3px solid var(--primary); border-radius: 6px; text-align: right;">
+            <p style="margin: 0 0 6px; font-size: 0.98rem; line-height: 1.8;">"ילד טהור ותמים שידע רק טוב. כמשפחה אנחנו מרוסקים ושבורי לב."</p>
+            <cite style="display: block; font-size: 0.85rem; color: var(--text-light); font-style: normal;">— ממשפחתו של ימנו</cite>
+          </blockquote>
+
+          <blockquote style="margin: 18px 0; padding: 14px 18px; background: var(--surface); border-right: 3px solid var(--primary); border-radius: 6px; text-align: right;">
+            <p style="margin: 0 0 6px; font-size: 0.98rem; line-height: 1.8;">"היה קהל גדול, צעקות, קבוצות של נערים שהקיפו מכל הכיוונים."</p>
+            <cite style="display: block; font-size: 0.85rem; color: var(--text-light); font-style: normal;">— יובל ספרלינג, עדת ראייה ברחוב</cite>
+          </blockquote>
+
+          <blockquote style="margin: 18px 0; padding: 14px 18px; background: var(--surface); border-right: 3px solid var(--primary); border-radius: 6px; text-align: right;">
+            <p style="margin: 0 0 6px; font-size: 0.98rem; line-height: 1.8;">"זהו רגע של חשבון נפש. יש לנו חובה לפעול יחד כדי למנוע את המקרה הבא."</p>
+            <cite style="display: block; font-size: 0.85rem; color: var(--text-light); font-style: normal;">— רמי גרינברג, ראש עיריית פתח תקווה</cite>
+          </blockquote>
+        </div>
+
+        <button type="button" class="btn" id="btn-memory-next">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i>
+          <span>קראנו</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== Screen 6: Mood (anonymous free-text) ===== -->
+    <section id="screen-mood" class="screen" aria-label="איפה אני כרגע">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true"><i class="fas fa-compass"></i></div>
+          <h1>איפה אני כרגע?</h1>
+        </div>
+        <p>לפני שנפתח שיחה, רגע פרטי.</p>
+        <p><strong>כתבו במשפט או שניים את התחושה שלכם/ן ברגע הזה.</strong> לא על האירוע — על איך אתם/ן נכנסים/ות למפגש הזה. המזג הפנימי שאיתו באתם/ן.</p>
+
+        <div class="instructions-box" style="background: var(--bg-cream-dark); border-right: 4px solid var(--primary);">
+          <p style="font-weight: 600; margin-bottom: 6px;">הכתיבה אנונימית.</p>
+          <p style="font-size: 0.92rem; color: var(--text-medium);">חברי/ות הקבוצה שלכם/ן לא יראו את זה, וזה לא יוקרן במליאה. תום יראה את כל המשפטים יחד, ללא שמות, וישלח אותם לסיכום רגשי של קבוצת המנהלים/ות כולה.</p>
+        </div>
+
+        <details style="margin: 14px 0; color: var(--text-medium);">
+          <summary style="cursor: pointer; font-size: 0.92rem; color: var(--primary-dark);">דוגמאות לאמירות אפשריות (פתחו לעיון)</summary>
+          <ul style="margin: 12px 0 0 0; padding-inline-start: 22px; font-size: 0.92rem; line-height: 1.8;">
+            <li>"אני עוד לא מעכל/ת."</li>
+            <li>"אני כועס/ת."</li>
+            <li>"משהו בי כבה."</li>
+            <li>"אני מרגיש/ה חסר/ת אונים."</li>
+            <li>"קשה לי להיות כאן היום."</li>
+            <li>"אני מודאג/ת לנוער."</li>
+            <li>"יש בי כאב שאני לא יודע/ת לנסח."</li>
+          </ul>
+          <p style="font-size: 0.88rem; color: var(--text-light); margin-top: 10px;">אלה רק דוגמאות — כתבו מה שבאמת עולה בכם/ן.</p>
+        </details>
+
+        <textarea id="mood-text" rows="4" placeholder="המזג הפנימי שלי כרגע..." aria-label="המזג הרגשי שלי"
+                  style="width:100%; padding:14px; border:2px solid rgba(44,62,80,0.12); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 110px; background: var(--bg-cream); color: var(--text-dark); box-sizing: border-box; margin: 12px 0;"></textarea>
+
+        <button type="button" class="btn" id="btn-mood-submit">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+          <span>שליחה אנונימית</span>
+        </button>
+        <p class="hint" id="mood-status" style="min-height:1.3em;"></p>
+      </div>
+    </section>
+
+    <!-- ===== Screen 7: Heart Round ===== -->
+    <section id="screen-heart" class="screen" aria-label="סבב הלב">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true" style="background: #F5DCD9; color: var(--heart);"><i class="fas fa-heart"></i></div>
+          <span class="group-badge" style="background: #F5DCD9; color: var(--heart);">סבב 1 מתוך 3</span>
+          <h1>סבב הלב</h1>
+        </div>
+
+        <div class="instructions-box" style="background: #F5DCD9; border-right: 4px solid var(--heart);">
+          <p style="font-weight:600; color: var(--heart); margin-bottom:8px; font-size: 1.05rem;">השאלה:</p>
+          <p style="color: var(--text-dark); font-size: 1.02rem;">איפה האירוע הזה נוגע בי — כאדם, לפני ובנוסף לתפקידי?</p>
+        </div>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">הצעה לנקודות התייחסות:</p>
+          <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.98rem; line-height:1.8;">
+            <li>מה עלה בכם/ן כששמעתם/ן על האירוע</li>
+            <li>אילו מחשבות מלוות אתכם/ן מאז שהתוודעתם/ן לאירוע</li>
+            <li>לאיזה זיכרון או אסוציאציה זה לוקח אתכם/ן</li>
+          </ul>
+        </div>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">איך זה עובד?</p>
+          <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.96rem; line-height:1.75;">
+            <li><strong>90 שניות</strong> לכל דובר/ת</li>
+            <li>הטיימר נועד לעזור להחזיק את השיח ולאפשר לכולם/ן להיכנס. הוא רק מראה את הזמן כדי להצליח לעמוד במסגרת זמנים נתונה של המפגש כולו.</li>
+            <li>בחלק זה אתם/ן מתבקשים/ות להימנע מלהגיב לדובר/ת. הרשו לעצמכם/ן רק להקשיב ולתת לכל אחד/ת בתורו/ה לדבר את אשר על ליבו / ליבה.</li>
+            <li>כשדובר/ת סיים/ה — הוא/היא לוחצ/ת "הדובר/ת הבא/ה" וזה מעדכן את כולם/ן.</li>
+            <li>אחרי שכולם/ן דיברו/ות, הכפתור ייסגר ותוכלו להמשיך.</li>
+          </ul>
+        </div>
+
+        <div class="timers" role="group" aria-label="טיימרים לסבב הלב">
+          <div class="timer-box">
+            <div class="timer-label">הדובר/ת <span id="heart-speaker-index">—</span></div>
+            <div class="timer-value" id="heart-timer-personal">1:30</div>
+          </div>
+          <div class="timer-box group-timer">
+            <div class="timer-label">זמן הקבוצה</div>
+            <div class="timer-value" id="heart-timer-group">—</div>
+          </div>
+        </div>
+
+        <p class="hint" id="heart-timer-status" style="min-height:1.5em; text-align:center;"></p>
+
+        <div class="timer-actions">
+          <button type="button" class="btn" id="btn-heart-start">
+            <i class="fas fa-play" aria-hidden="true"></i>
+            <span>התחלת הסבב</span>
+          </button>
+          <button type="button" class="btn" id="btn-heart-next-speaker" style="display:none; background: var(--heart);">
+            <i class="fas fa-forward" aria-hidden="true"></i>
+            <span>הדובר/ת הבא/ה</span>
+          </button>
+          <button type="button" class="btn secondary small" id="btn-heart-done">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>סיימנו, ממשיכים לסבב הראש</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Screen 8: Head Round ===== -->
+    <section id="screen-head" class="screen" aria-label="סבב הראש">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true" style="background: #DCE5EC; color: var(--head);"><i class="fas fa-brain"></i></div>
+          <span class="group-badge" style="background: #DCE5EC; color: var(--head);">סבב 2 מתוך 3</span>
+          <h1>סבב הראש</h1>
+        </div>
+
+        <p>עברנו דרך הלב. עכשיו הראש.</p>
+        <p><strong>בחרו כל אחד/ת זווית שמדברת אליכם/ן.</strong> אין חובה שכולכם/ן תדברו על אותו דבר — להפך: אם כל אחד/ת ייכנס/תיכנס דרך זווית אחרת, הקבוצה תשמע תמונה עשירה יותר.</p>
+
+        <div class="instructions-box" style="background: #DCE5EC; border-right: 4px solid var(--head);">
+          <p style="font-weight:600; color: var(--head); margin-bottom:12px;">שש נקודות כניסה אפשריות — בחרו אחת שמהדהדת לכם/ן, או הביאו משלכם/ן:</p>
+          <ol style="margin-inline-start:18px; color: var(--text-dark); font-size:0.96rem; line-height:1.8;">
+            <li style="margin-bottom: 10px;"><strong style="color: var(--head);">אחריות המערכת</strong> — מה מידת האחריות של מערכת החינוך / בית הספר שלי באירוע כזה? איפה יכולנו להיות ולא הגענו?</li>
+            <li style="margin-bottom: 10px;"><strong style="color: var(--head);">איזון משאבים</strong> — כמה שעות שבועיות אנחנו מקדישים/ות בבית הספר שלנו לתכנים חברתיים, רגשיים וערכיים — לעומת למידה דידקטית של חומר לימוד? האם זו קריאת השכמה?</li>
+            <li style="margin-bottom: 10px;"><strong style="color: var(--head);">הנוער שמחוץ למערכת</strong> — חלק מהמעורבים/ות בתופעה של אלימות נוער הם בני נוער שנשמטו מבית הספר. מה הקשר שלנו — ואם לא שלנו, של מי — לנוער הזה?</li>
+            <li style="margin-bottom: 10px;"><strong style="color: var(--head);">ההורים והקהילה</strong> — בית הספר לבדו לא יכול. איפה מתחילה האחריות של ההורים, של העיר, של הקהילה — ואיפה היא נגמרת? איפה המקום שלנו להוביל ואיפה להצטרף?</li>
+            <li style="margin-bottom: 10px;"><strong style="color: var(--head);">ישראל עכשיו</strong> — דור שגדל על 7/10, מלחמה מתמשכת, חוסר ודאות. האם יש קשר בין הלחץ המצטבר שאנחנו מרגישים/ות לבין סוג הפיצוץ הזה?</li>
+            <li><strong style="color: var(--head);">תרבות הסלמה</strong> — איך הגענו לחברה שבה נערים דוקרים על בקשה מנומסת? מה קרה למרחב הציבורי, לאיפוק, לכבוד הבסיסי?</li>
+          </ol>
+        </div>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">איך זה עובד?</p>
+          <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.96rem; line-height:1.75;">
+            <li><strong>2 דקות</strong> לכל דובר/ת</li>
+            <li>הטיימר רק מראה את הזמן כדי להצליח לעמוד במסגרת זמנים נתונה של המפגש כולו.</li>
+            <li>גם כאן — הקשבה בלבד, בלי להגיב לדובר/ת. הרשו לעצמכם/ן לתת לכל אחד/ת בתורו/ה לדבר את אשר על ליבו / ליבה.</li>
+          </ul>
+        </div>
+
+        <div class="timers" role="group" aria-label="טיימרים לסבב הראש">
+          <div class="timer-box">
+            <div class="timer-label">הדובר/ת <span id="head-speaker-index">—</span></div>
+            <div class="timer-value" id="head-timer-personal">2:00</div>
+          </div>
+          <div class="timer-box group-timer">
+            <div class="timer-label">זמן הקבוצה</div>
+            <div class="timer-value" id="head-timer-group">—</div>
+          </div>
+        </div>
+
+        <p class="hint" id="head-timer-status" style="min-height:1.5em; text-align:center;"></p>
+
+        <div class="timer-actions">
+          <button type="button" class="btn" id="btn-head-start">
+            <i class="fas fa-play" aria-hidden="true"></i>
+            <span>התחלת הסבב</span>
+          </button>
+          <button type="button" class="btn" id="btn-head-next-speaker" style="display:none; background: var(--head);">
+            <i class="fas fa-forward" aria-hidden="true"></i>
+            <span>הדובר/ת הבא/ה</span>
+          </button>
+          <button type="button" class="btn secondary small" id="btn-head-done">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>סיימנו, ממשיכים לסבב הידיים</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Screen 9: Hands Round ===== -->
+    <section id="screen-hands" class="screen" aria-label="סבב הידיים">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true" style="background: #DDE8D6; color: var(--hands);"><i class="fas fa-hands-helping"></i></div>
+          <span class="group-badge" style="background: #DDE8D6; color: var(--hands);">סבב 3 מתוך 3 · האחרון</span>
+          <h1>סבב הידיים</h1>
+        </div>
+
+        <p>הלב הרגיש. הראש הבין. עכשיו הידיים.</p>
+
+        <div class="instructions-box" style="background: #DDE8D6; border-right: 4px solid var(--hands);">
+          <p style="font-weight:600; color: var(--hands); margin-bottom:8px; font-size: 1.05rem;">השאלה:</p>
+          <p style="color: var(--text-dark); font-size: 1.02rem;">לאיזו פעולה אני יוצא/ת <em>מייד</em> בבית הספר שלי?</p>
+        </div>
+
+        <p style="color: var(--text-medium); font-size: 0.95rem;">"מייד" לא חייב להיות "מחר בבוקר", אבל כן בזמן הקרוב — לא בעוד חודשיים, לא "בתוכנית השנתית הבאה". השבוע הזה. החודש הזה.</p>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">הכיוון:</p>
+          <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.96rem; line-height:1.75;">
+            <li><em>פרקטי.</em> לא "אעצים את התלמידים/ות" — אלא "אקיים שיח של 15 דקות עם צוות המחנכים/ות מחר ב-8:00 על מה האירוע חושף".</li>
+            <li><em>ברור.</em> משהו שאפשר לבדוק בעוד שבוע אם קרה.</li>
+            <li><em>מדיד.</em> לא רעיון — פעולה.</li>
+          </ul>
+          <p style="color: var(--text-medium); font-size: 0.92rem; margin-top: 10px;">אם עדיין לא ברור לכם/ן מה בדיוק — זרקו רעיונות גולמיים. הסבב הזה יעזור לכם/ן לנסח. במסך הבא תכתבו את זה.</p>
+        </div>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">איך זה עובד?</p>
+          <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.96rem; line-height:1.75;">
+            <li><strong>90 שניות</strong> לכל דובר/ת</li>
+            <li>אותו טיימר, אותה הקשבה.</li>
+          </ul>
+        </div>
+
+        <div class="timers" role="group" aria-label="טיימרים לסבב הידיים">
+          <div class="timer-box">
+            <div class="timer-label">הדובר/ת <span id="hands-speaker-index">—</span></div>
+            <div class="timer-value" id="hands-timer-personal">1:30</div>
+          </div>
+          <div class="timer-box group-timer">
+            <div class="timer-label">זמן הקבוצה</div>
+            <div class="timer-value" id="hands-timer-group">—</div>
+          </div>
+        </div>
+
+        <p class="hint" id="hands-timer-status" style="min-height:1.5em; text-align:center;"></p>
+
+        <div class="timer-actions">
+          <button type="button" class="btn" id="btn-hands-start">
+            <i class="fas fa-play" aria-hidden="true"></i>
+            <span>התחלת הסבב</span>
+          </button>
+          <button type="button" class="btn" id="btn-hands-next-speaker" style="display:none; background: var(--hands);">
+            <i class="fas fa-forward" aria-hidden="true"></i>
+            <span>הדובר/ת הבא/ה</span>
+          </button>
+          <button type="button" class="btn secondary small" id="btn-hands-done">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>סיימנו, ממשיכים</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Screen 10: Actions (share practical plans) ===== -->
+    <section id="screen-actions" class="screen" aria-label="שיתוף הפעולות">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle" aria-hidden="true" style="background: var(--bg-cream-dark); color: var(--primary-dark);"><i class="fas fa-pencil-alt"></i></div>
+          <h1>מה אני הולך/ת לעשות</h1>
+        </div>
+
+        <!-- State A: no one is summarizing → user writes their own OR volunteers -->
+        <div id="actions-state-own">
+          <p>הסבב נגמר. עכשיו — לשתף פרקטית.</p>
+          <p><strong>כתבו טכני. מפורט. מעשי.</strong> ככל שתהיו ספציפיים/ות יותר — כך זה בעל ערך רב יותר לקולגות שלכם/ן המתלבטים/ות מה לצאת לעשות.</p>
+
+          <details style="margin: 12px 0;">
+            <summary style="cursor: pointer; font-size: 0.92rem; color: var(--primary-dark);">דוגמאות לניסוחים מדויקים (פתחו לעיון)</summary>
+            <ul style="margin: 12px 0 0 0; padding-inline-start: 22px; font-size: 0.92rem; line-height: 1.8; color: var(--text-medium);">
+              <li>"אקיים שיח של 15 דקות בצוות מחנכים/ות מחר ב-8:00 בבוקר על מה שהאירוע חושף עלינו."</li>
+              <li>"אזמן את עובד/ת הקידום לנוער של העיר לישיבת צוות השבוע."</li>
+              <li>"אקבל החלטה להוסיף שעה שבועית של שיח רגשי-ערכי בכל שכבה."</li>
+              <li>"אגייס את ועד ההורים לשיחה מובנית על אלימות נוער ומה הורה יכול/ה לעשות."</li>
+              <li>"אכתוב מייל לכל המורים/ות עם שלוש שאלות שאני מבקש/ת מהם/ן להעלות בשיעור השבוע."</li>
+            </ul>
+          </details>
+
+          <textarea id="actions-text" rows="5" placeholder="מה אני הולך/ת לעשות, בפירוט..." aria-label="הפעולה שאני יוצא לעשות"
+                    style="width:100%; padding:14px; border:2px solid rgba(44,62,80,0.12); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 130px; background: var(--bg-cream); color: var(--text-dark); box-sizing: border-box; margin: 12px 0;"></textarea>
+
+          <button type="button" class="btn" id="btn-actions-submit">
+            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+            <span>זה המידע שלי</span>
+          </button>
+
+          <div style="background: var(--bg-cream-dark); border-radius: var(--radius-md); padding: 14px 16px; margin-top: 16px;">
+            <p style="font-size: 0.92rem; color: var(--text-medium); margin-bottom: 10px;">במקום זה — אחד/ת מחברי/ות הקבוצה יכול/ה לכתוב סיכום משותף בעבור כולם/ן.</p>
+            <button type="button" class="btn secondary small" id="btn-volunteer-summarize">
+              <i class="fas fa-pen-to-square" aria-hidden="true"></i>
+              <span>אני מתנדב/ת לסכם בעבור כולנו</span>
+            </button>
+          </div>
+          <p class="hint" id="actions-status" style="min-height:1.3em;"></p>
+        </div>
+
+        <!-- State B: someone else in the group is summarizing → this user waits -->
+        <div id="actions-state-wait" style="display:none;">
+          <div class="instructions-box" style="background: var(--bg-cream-dark); border-right: 4px solid var(--primary); text-align: center;">
+            <p style="font-weight: 600; color: var(--text-dark); font-size: 1.1rem; margin-bottom: 8px;">
+              <span id="summarizer-name">—</span> כותב/ת את הסיכום בעבור הקבוצה שלכם/ן.
+            </p>
+            <p style="font-size: 0.95rem; color: var(--text-medium);">ממתינים/ות בשקט. ברגע שהסיכום נשלח — יופיע כפתור להמשיך יחד למסך הבא.</p>
+          </div>
+          <button type="button" class="btn" disabled style="opacity: 0.5; cursor: not-allowed;">
+            <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+            <span>ממתין/ה</span>
+          </button>
+        </div>
+
+        <!-- State C: this user volunteered to summarize → writes for the group -->
+        <div id="actions-state-volunteer" style="display:none;">
+          <p><strong>את/ה כותב/ת את הסיכום בעבור הקבוצה.</strong></p>
+          <p style="color: var(--text-medium); font-size: 0.95rem;">סכמו את מה שחברי/ות הקבוצה אמרו בסבב הידיים — מה כל אחד/ת הולך/ת לעשות בבית הספר שלו/ה. כתבו טכני, מפורט, מעשי. ציינו שם לצד כל פעולה כדי שכל אחד/ת יזוהה.</p>
+
+          <textarea id="actions-volunteer-text" rows="6" placeholder="למשל:&#10;רונית — תקיים שיח צוות מחנכים/ות מחר בבוקר על האירוע.&#10;דני — יזמן את עובד/ת הקידום לנוער לישיבה השבוע.&#10;..." aria-label="סיכום הפעולות של הקבוצה"
+                    style="width:100%; padding:14px; border:2px solid rgba(44,62,80,0.12); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 180px; background: var(--bg-cream); color: var(--text-dark); box-sizing: border-box; margin: 12px 0;"></textarea>
+
+          <button type="button" class="btn" id="btn-actions-volunteer-submit">
+            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+            <span>שליחת הסיכום בעבור הקבוצה</span>
+          </button>
+          <p class="hint" id="actions-volunteer-status" style="min-height:1.3em;"></p>
+        </div>
+
+        <!-- State D: group is done, ready to continue -->
+        <div id="actions-state-done" style="display:none;">
+          <div class="instructions-box" style="background: #DDE8D6; border-right: 4px solid var(--hands); text-align: center;">
+            <p style="font-weight: 600; color: var(--text-dark); font-size: 1.05rem;">
+              <i class="fas fa-check-circle" aria-hidden="true" style="color: var(--hands);"></i>
+              הסיכום של הקבוצה נשלח ע"י <span id="summarizer-name-done">—</span>.
+            </p>
+          </div>
+          <button type="button" class="btn" id="btn-actions-continue">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>המשיכו למסך הבא</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Screen 11: Feedback (tech experience) ===== -->
+    <section id="screen-feedback" class="screen" aria-label="משוב על החוויה">
+      <div class="card">
+        <div class="card-header">
+          <div class="icon-circle gold" aria-hidden="true"><i class="fas fa-comment-dots"></i></div>
+          <h1>חוזרים למליאה</h1>
+        </div>
+        <p>כאן נגמר החלק הקבוצתי. <strong>חזרו למליאה.</strong> תום יצפה לכם/ן שם.</p>
+        <p>בזמן שכולם/ן מתאספים/ות — רגע אחד לפני שמתחילים את החלק השני.</p>
+
+        <p><strong>כתבו כמה מילים על החוויה עצמה של השימוש בטכנולוגיה.</strong> לא על התוכן (זה נשאר בקבוצה) אלא על החוויה:</p>
+        <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.96rem; line-height:1.8;">
+          <li>מה דעתכם/ן על הטכנולוגיה כמובילה של שיח קבוצתי?</li>
+          <li>מה דעתכם/ן על האיזון שהיה בין שיחה אנושית פנים אל פנים בקבוצה, לבין השימוש בטכנולוגיה ובמסכים?</li>
+          <li>מה עבד? מה הפריע? מה חסר?</li>
+        </ul>
+        <p style="color: var(--text-medium); font-size: 0.9rem;">מה שתכתבו/ן כאן יהיה הבסיס לחלק השני של המפגש: <em>איך בונים מערכות כאלה, איך נכון להשתמש בבינה מלאכותית להנחיית תהליכים קבוצתיים.</em></p>
+
+        <textarea id="feedback-text" rows="5" placeholder="המחשבות שלי על החוויה..." aria-label="טקסט משוב על החוויה"
+                  style="width:100%; padding:14px; border:2px solid rgba(44,62,80,0.12); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 140px; background: var(--bg-cream); color: var(--text-dark); box-sizing: border-box; margin: 12px 0;"></textarea>
+
+        <button type="button" class="btn" id="btn-feedback-submit">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+          <span>שליחה</span>
+        </button>
+        <button type="button" class="btn secondary small" id="btn-feedback-skip">
+          <i class="fas fa-forward" aria-hidden="true"></i>
+          <span>דילוג</span>
+        </button>
+        <p class="hint" id="feedback-status" style="min-height:1.3em;"></p>
+      </div>
+    </section>
+
+    <!-- ===== Admin Dashboard ===== -->
+    <section id="screen-dashboard" class="screen" aria-label="מסך מנחה" style="max-width: none;">
+      <div class="dashboard" style="width:100%;">
+        <div class="dashboard-grid">
+
+          <!-- Admin panel -->
+          <div class="panel admin-panel">
+            <h2><i class="fas fa-cogs" aria-hidden="true" style="color:var(--primary);"></i> ניהול</h2>
+
+            <div class="stats">
+              <div class="stat">
+                <div class="stat-value" id="stat-count">0</div>
+                <div class="stat-label">משתתפים רשומים</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value" id="stat-groups">0</div>
+                <div class="stat-label">קבוצות</div>
+              </div>
+            </div>
+
+            <div class="group-preview" id="group-preview">
+              <h3>משתתפים ברשימה:</h3>
+              <div id="participants-list"></div>
+            </div>
+
+            <div id="allocation-preview" class="warning-box" style="display:none;"></div>
+
+            <button type="button" class="btn" id="btn-allocate">
+              <i class="fas fa-random" aria-hidden="true"></i>
+              <span>חלוקה לקבוצות</span>
+            </button>
+            <button type="button" class="btn sage small" id="btn-summarize-mood" style="margin-top:8px;">
+              <i class="fas fa-wind" aria-hidden="true"></i>
+              <span>צור סיכום רגשי (mood)</span>
+            </button>
+            <p class="hint" id="mood-summary-status" style="margin-top:4px; min-height:1.3em;"></p>
+            <button type="button" class="btn sage small" id="btn-summarize-actions" style="margin-top:4px;">
+              <i class="fas fa-list-check" aria-hidden="true"></i>
+              <span>צור רשימת פעולות פרקטיות</span>
+            </button>
+            <p class="hint" id="actions-summary-status" style="margin-top:4px; min-height:1.3em;"></p>
+            <button type="button" class="btn sage small" id="btn-summarize" style="margin-top:4px;">
+              <i class="fas fa-comments" aria-hidden="true"></i>
+              <span>צור סיכום משוב על החוויה</span>
+            </button>
+            <p class="hint" id="summary-status" style="margin-top:4px; min-height:1.3em;"></p>
+            <button type="button" class="btn secondary small" id="btn-reset" style="margin-top:8px;">
+              <i class="fas fa-rotate-left" aria-hidden="true"></i>
+              <span>אתחול הסדנה</span>
+            </button>
+          </div>
+
+          <!-- Mood summary panel (Gemini-generated from /mood) -->
+          <div class="panel mood-panel">
+            <h2><i class="fas fa-wind" aria-hidden="true" style="color:var(--heart);"></i> המזג הרגשי בחדר</h2>
+            <div class="summary-content">
+              <div class="empty-state" id="mood-summary-empty">
+                ⏳ סיכום רגשי יופיע כאן אחרי שכולם/ן שלחו ותפעילו את הסיכום
+              </div>
+              <div class="summary-text" id="mood-summary-text" style="display:none;"></div>
+              <div class="summary-meta" id="mood-summary-meta" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Actions wall: lists submitted actions from each group (raw, before summary) -->
+          <div class="panel panel-wide collage-panel">
+            <h2><i class="fas fa-pencil-alt" aria-hidden="true" style="color:var(--hands);"></i> הפעולות שנאספו</h2>
+            <div id="actions-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+              <div class="empty-state">הפעולות יופיעו כאן ברגע שהקבוצות שולחות</div>
+            </div>
+          </div>
+
+          <!-- Actions summary (Gemini-generated practical list from /actions) -->
+          <div class="panel panel-wide summary-panel">
+            <h2><i class="fas fa-list-check" aria-hidden="true" style="color:var(--hands);"></i> רשימת הפעולות הפרקטיות</h2>
+            <div class="summary-content">
+              <div class="empty-state" id="actions-summary-empty">
+                ⏳ הרשימה תופק אחרי שהקבוצות סיימו לשלוח ותפעילו את הסיכום
+              </div>
+              <div class="summary-text" id="actions-summary-text" style="display:none;"></div>
+              <div class="summary-meta" id="actions-summary-meta" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Feedback summary (Gemini-generated from /feedback) -->
+          <div class="panel panel-wide summary-panel">
+            <h2><i class="fas fa-comments" aria-hidden="true" style="color:var(--primary);"></i> משוב על החוויה הטכנולוגית</h2>
+            <div class="summary-content">
+              <div class="empty-state" id="summary-empty">
+                ⏳ הסיכום יופיע כאן אחרי שכולם/ן שלחו ותפעילו את הסיכום
+              </div>
+              <div class="summary-text" id="summary-text" style="display:none;"></div>
+              <div class="summary-meta" id="summary-meta" style="display:none;"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <button type="button" id="btn-view-toggle" class="view-toggle-btn" aria-label="החלפת תצוגה">
+    <i class="fas fa-display" aria-hidden="true"></i>
+    <span>עבור לתצוגה</span>
+  </button>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Firebase SDK (compat) - Database only, Storage replaced with base64-in-DB -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+    // ===== Config =====
+    // TODO: Replace with the new Firebase project config for 'petah-tikva-response-2026'
+    // Create the project at console.firebase.google.com (Spark/free plan, region europe-west1, Realtime Database test mode)
+    // Then paste the generated config below.
+    const FIREBASE_CONFIG = {
+      apiKey: "REPLACE_ME",
+      authDomain: "petah-tikva-response-2026.firebaseapp.com",
+      databaseURL: "https://petah-tikva-response-2026-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "petah-tikva-response-2026",
+      storageBucket: "petah-tikva-response-2026.firebasestorage.app",
+      messagingSenderId: "REPLACE_ME",
+      appId: "REPLACE_ME"
+    };
+
+    const ADMIN_KEY = 'petah-zikaron-2026'; // URL: ?dashboard=true&key=petah-zikaron-2026
+    const DEBUG = new URLSearchParams(location.search).has('debug');
+
+    // ===== State =====
+    const state = {
+      userId: null,
+      name: null,
+      group: null,
+      allParticipants: {},
+      allGroups: {},
+      allActions: {},
+    };
+
+    // ===== Utilities =====
+    function showToast(msg, ms = 2500) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), ms);
+    }
+
+    function uuid() {
+      return 'u-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+      // Show group header on post-allocation screens only (hide on welcome/waiting/dashboard/group)
+      const hideHeaderOn = ['screen-welcome', 'screen-waiting', 'screen-dashboard', 'screen-group'];
+      const header = document.getElementById('group-header');
+      if (header) {
+        if (state.group && !hideHeaderOn.includes(id)) {
+          header.classList.add('visible');
+        } else {
+          header.classList.remove('visible');
+        }
+      }
+      window.scrollTo(0, 0);
+    }
+
+    async function updateGroupHeader() {
+      if (!firebaseReady || !state.group) return;
+      const snap = await db.ref('groups/' + state.group).once('value');
+      const data = snap.val();
+      if (!data || !data.members) return;
+      document.getElementById('gh-badge').textContent = 'קבוצה ' + state.group;
+      const nameSnaps = await Promise.all(
+        data.members.map(uid => db.ref('participants/' + uid + '/name').once('value'))
+      );
+      const parts = data.members.map((uid, i) => {
+        const name = nameSnaps[i].val() || '...';
+        const isMe = uid === state.userId;
+        return isMe
+          ? `<span class="me">${escapeHtml(name)}</span>`
+          : escapeHtml(name);
+      });
+      document.getElementById('gh-members').innerHTML = parts.join(' · ');
+    }
+
+    // ===== Firebase init =====
+    let db = null, firebaseReady = false;
+
+    function initFirebase() {
+      if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === 'REPLACE_ME') {
+        console.warn('Firebase config not set — running in preview/offline mode. Replace REPLACE_ME values in FIREBASE_CONFIG.');
+        return false;
+      }
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.database();
+        firebaseReady = true;
+        return true;
+      } catch (e) {
+        console.error('Firebase init failed', e);
+        return false;
+      }
+    }
+
+    // ===== Participant flow =====
+
+    // Pick storage: ?fresh=1 → sessionStorage (per-tab, good for testing many users
+    // on one machine); default → localStorage (persists across refreshes, correct for
+    // real phones where each device has its own storage anyway)
+    const identityStorage = (new URLSearchParams(location.search)).has('fresh')
+      ? sessionStorage
+      : localStorage;
+
+    function loadIdentity() {
+      let id = identityStorage.getItem('pp-userId');
+      let name = identityStorage.getItem('pp-name');
+      if (!id) {
+        id = uuid();
+        identityStorage.setItem('pp-userId', id);
+      }
+      state.userId = id;
+      state.name = name;
+    }
+
+    function saveIdentity() {
+      identityStorage.setItem('pp-userId', state.userId);
+      identityStorage.setItem('pp-name', state.name);
+    }
+
+    function resetIdentity() {
+      identityStorage.removeItem('pp-userId');
+      identityStorage.removeItem('pp-name');
+      identityStorage.removeItem('pp-screen');
+    }
+
+    async function registerParticipant(name) {
+      state.name = name;
+      saveIdentity();
+      if (firebaseReady) {
+        await db.ref('participants/' + state.userId).set({
+          name: name,
+          joinedAt: firebase.database.ServerValue.TIMESTAMP,
+          group: null,
+          currentScreen: 'waiting'
+        });
+        listenForGroup();
+      }
+      goToScreen('screen-waiting');
+    }
+
+    function goToScreen(id) {
+      identityStorage.setItem('pp-screen', id);
+      showScreen(id);
+      if (id === 'screen-waiting') {
+        document.querySelector('#waiting-name span').textContent = state.name || '';
+      }
+    }
+
+    // Listen for when admin allocates us to a group
+    function listenForGroup() {
+      if (!firebaseReady) return;
+      db.ref('participants/' + state.userId + '/group').on('value', snap => {
+        const group = snap.val();
+        if (!group) return;
+        const justAssigned = !state.group;
+        state.group = group;
+        updateGroupHeader();
+        listenToGroupScreen(); // attach sync listener now that we know the group
+        if (justAssigned) {
+          // First-time allocation: move from waiting → group
+          const current = identityStorage.getItem('pp-screen');
+          if (current === 'screen-waiting') {
+            renderGroupMembers();
+            goToScreen('screen-group');
+          }
+        }
+      });
+    }
+
+    // ===== Group-level screen sync =====
+    // When one member clicks "ready / read / done" on a synced screen, everyone in
+    // the group advances together. Source of truth: /groups/{id}/currentScreen.
+    // Sync only moves FORWARD in screen order — never back, never skipping
+    // individual-only screens (mood / actions / feedback) unless the group
+    // already moved past them.
+    const SCREEN_ORDER = [
+      'screen-welcome', 'screen-waiting', 'screen-group',
+      'screen-memorial', 'screen-memory', 'screen-mood',
+      'screen-heart', 'screen-head', 'screen-hands',
+      'screen-actions', 'screen-feedback'
+    ];
+    let groupScreenUnsub = null;
+
+    const ROUND_SCREENS = ['screen-heart','screen-head','screen-hands'];
+    function listenToGroupScreen() {
+      if (!firebaseReady || !state.group || groupScreenUnsub) return;
+      const ref = db.ref('groups/' + state.group + '/currentScreen');
+      const handler = snap => {
+        const target = snap.val();
+        if (!target) return;
+        const current = identityStorage.getItem('pp-screen');
+        if (current === target) return;
+        const cIdx = SCREEN_ORDER.indexOf(current);
+        const tIdx = SCREEN_ORDER.indexOf(target);
+        if (cIdx < 0 || tIdx <= cIdx) return; // refuse to go backward or to unknown screens
+        // Leaving a timer round — stop listening to the old timer
+        if (ROUND_SCREENS.includes(current)) stopListeningToGroupTimer();
+        goToScreen(target);
+        // Entering a timer round — set round name and start listening to the timer
+        if (ROUND_SCREENS.includes(target)) {
+          setCurrentRound(target.replace('screen-',''));
+          listenToGroupTimer();
+        }
+        // Entering actions screen — start listening to summarizer state
+        if (target === 'screen-actions') listenToActionsSummarizer();
+      };
+      ref.on('value', handler);
+      groupScreenUnsub = () => ref.off('value', handler);
+    }
+
+    function syncGroupScreen(target) {
+      if (firebaseReady && state.group) {
+        db.ref('groups/' + state.group + '/currentScreen').set(target);
+      }
+    }
+
+    async function renderGroupMembers() {
+      if (!firebaseReady || !state.group) return;
+      const snap = await db.ref('groups/' + state.group).once('value');
+      const data = snap.val();
+      if (!data || !data.members) return;
+      const badge = document.getElementById('group-name-badge');
+      badge.textContent = 'קבוצה ' + state.group;
+      const ul = document.getElementById('group-members-list');
+      ul.innerHTML = '';
+
+      // Fetch each member's name directly from Firebase (participant view doesn't
+      // keep a global participants object — that's only in dashboard mode)
+      const nameSnaps = await Promise.all(
+        data.members.map(uid => db.ref('participants/' + uid + '/name').once('value'))
+      );
+
+      data.members.forEach((uid, i) => {
+        const name = nameSnaps[i].val() || '...';
+        const isMe = uid === state.userId;
+        const li = document.createElement('li');
+        const initial = (name || '?').charAt(0);
+        const meTag = isMe ? ' <small style="color:var(--text-light); font-weight:400;">(את/ה)</small>' : '';
+        li.innerHTML = `<span class="member-icon" aria-hidden="true">${escapeHtml(initial)}</span><span>${escapeHtml(name)}${meTag}</span>`;
+        ul.appendChild(li);
+      });
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // ===== Screen handlers =====
+
+    // Screen 1: welcome
+    document.getElementById('form-welcome').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name-input').value.trim();
+      if (name.length < 2) return;
+      const btn = document.getElementById('btn-submit-name');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'רגע...';
+      try {
+        await registerParticipant(name);
+      } catch (err) {
+        console.error(err);
+        showToast('תקלה ברישום, נסו שוב');
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'הצטרפות';
+      }
+    });
+
+    // Screen 3: group ready — group-synced (one click advances whole group)
+    document.getElementById('btn-group-ready').addEventListener('click', () => {
+      if (firebaseReady && state.userId) {
+        db.ref('participants/' + state.userId + '/readyAt').set(firebase.database.ServerValue.TIMESTAMP);
+      }
+      goToScreen('screen-memorial');
+      syncGroupScreen('screen-memorial');
+    });
+
+    // Screen 4: memorial next — group-synced
+    document.getElementById('btn-memorial-next').addEventListener('click', () => {
+      goToScreen('screen-memory');
+      syncGroupScreen('screen-memory');
+    });
+
+    // Screen 5: memory next — group-synced
+    document.getElementById('btn-memory-next').addEventListener('click', () => {
+      goToScreen('screen-mood');
+      syncGroupScreen('screen-mood');
+    });
+
+    // Screen 6: mood — free-text, anonymous to other participants (tom sees it in dashboard)
+    document.getElementById('btn-mood-submit').addEventListener('click', async () => {
+      const text = document.getElementById('mood-text').value.trim();
+      const statusEl = document.getElementById('mood-status');
+      if (!text) {
+        statusEl.textContent = 'כתבו משפט לפני השליחה (אין כתיבה — אין שליחה).';
+        return;
+      }
+      const btn = document.getElementById('btn-mood-submit');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'שולח...';
+      try {
+        if (firebaseReady && state.userId) {
+          await db.ref('mood/' + state.userId).set({
+            text: text,
+            group: state.group || null,
+            submittedAt: firebase.database.ServerValue.TIMESTAMP
+          });
+        }
+        statusEl.textContent = 'נשלח. ממשיכים...';
+        // Individual transition — each person enters heart round at their own pace.
+        // The heart timer won't start until someone in the group presses "start",
+        // so latecomers still arrive in time.
+        setTimeout(() => {
+          goToScreen('screen-heart');
+          setCurrentRound('heart');
+          listenToGroupTimer();
+        }, 800);
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'תקלה בשמירה, נסו שוב.';
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'שליחה אנונימית';
+      }
+    });
+
+    // ===== Synchronized Group Timer — Heart / Head / Hands rounds =====
+    // Shared state lives in /groups/{groupId}/timer. Every member subscribes and
+    // rebases their local display from the shared state + server-time sync.
+    //
+    // state: 'idle' | 'running' | 'paused' | 'ended'
+    // round: 'heart' | 'head' | 'hands'  — identifies which round is active
+    // personalMs: duration per speaker for this round (stored on the timer state)
+    // speakerIndex: 0-based index of current speaker (0 .. groupSize-1)
+    // speakerCount: number of "next speaker" transitions that have happened
+    //   (starts at 1 after first "start"; when it reaches groupSize, the button
+    //    auto-disables because everyone spoke).
+    // When running: personalEndsAt, groupEndsAt hold absolute ms timestamps
+    // When paused/ended: personalRemainingMs, groupRemainingMs hold durations
+    const ROUND_CONFIG = {
+      heart: {
+        personalMs: 90000,  // 1:30
+        nextScreen: 'screen-head',
+        ids: { timerPersonal:'heart-timer-personal', timerGroup:'heart-timer-group',
+               speakerIdx:'heart-speaker-index', btnStart:'btn-heart-start',
+               btnNext:'btn-heart-next-speaker', btnDone:'btn-heart-done',
+               timerStatus:'heart-timer-status' }
+      },
+      head: {
+        personalMs: 120000, // 2:00
+        nextScreen: 'screen-hands',
+        ids: { timerPersonal:'head-timer-personal', timerGroup:'head-timer-group',
+               speakerIdx:'head-speaker-index', btnStart:'btn-head-start',
+               btnNext:'btn-head-next-speaker', btnDone:'btn-head-done',
+               timerStatus:'head-timer-status' }
+      },
+      hands: {
+        personalMs: 90000,  // 1:30
+        nextScreen: 'screen-actions',
+        ids: { timerPersonal:'hands-timer-personal', timerGroup:'hands-timer-group',
+               speakerIdx:'hands-speaker-index', btnStart:'btn-hands-start',
+               btnNext:'btn-hands-next-speaker', btnDone:'btn-hands-done',
+               timerStatus:'hands-timer-status' }
+      }
+    };
+    let currentRound = null;
+    function setCurrentRound(name) { currentRound = name; }
+    function currentRoundConfig() { return currentRound ? ROUND_CONFIG[currentRound] : null; }
+    function currentPersonalMs() {
+      const cfg = currentRoundConfig();
+      return cfg ? cfg.personalMs : 90000;
+    }
+
+    let serverTimeOffset = 0;
+    let groupTimerTick = null;
+    let groupTimerRef = null;
+    let groupTimerData = null;  // last snapshot we saw
+    let groupTimerUnsub = null;
+
+    function serverNow() { return Date.now() + serverTimeOffset; }
+
+    function groupTotalMs(size) {
+      // personalMs × N speakers, for the current round
+      return currentPersonalMs() * size;
+    }
+
+    function formatTime(ms) {
+      const sec = Math.max(0, Math.round(ms / 1000));
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    function beep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = 660;
+        o.connect(g);
+        g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+        o.start();
+        o.stop(ctx.currentTime + 0.5);
+      } catch (e) {}
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    }
+
+    function getGroupSize() {
+      if (!state.group || !state.allGroupsLocal) return 4;
+      const g = state.allGroupsLocal[state.group];
+      if (!g || !g.members) return 4;
+      return g.members.length;
+    }
+
+    // Listen to /.info/serverTimeOffset once so our clocks match Firebase
+    function initServerTimeSync() {
+      if (!firebaseReady) return;
+      db.ref('.info/serverTimeOffset').on('value', snap => {
+        serverTimeOffset = snap.val() || 0;
+      });
+    }
+
+    // Start listening to the group timer state (called when we enter discussion screen)
+    async function listenToGroupTimer() {
+      if (!firebaseReady || !state.group) return;
+      // Cache group members for size lookup
+      if (!state.allGroupsLocal) state.allGroupsLocal = {};
+      const gSnap = await db.ref('groups/' + state.group).once('value');
+      state.allGroupsLocal[state.group] = gSnap.val() || {};
+
+      if (groupTimerUnsub) groupTimerUnsub();
+      groupTimerRef = db.ref('groups/' + state.group + '/timer');
+      const handler = snap => {
+        groupTimerData = snap.val();
+        renderTimerUI();
+      };
+      groupTimerRef.on('value', handler);
+      groupTimerUnsub = () => groupTimerRef.off('value', handler);
+
+      // Local tick updates the display every 500ms while running
+      if (groupTimerTick) clearInterval(groupTimerTick);
+      groupTimerTick = setInterval(renderTimerUI, 500);
+    }
+
+    function stopListeningToGroupTimer() {
+      if (groupTimerUnsub) { groupTimerUnsub(); groupTimerUnsub = null; }
+      if (groupTimerTick) { clearInterval(groupTimerTick); groupTimerTick = null; }
+      groupTimerData = null;
+    }
+
+    // Compute current personal + group remaining ms from the shared state
+    function computeTimes(t) {
+      if (!t) return { personal: currentPersonalMs(), group: 0, done: 0 };
+      const size = getGroupSize();
+      if (t.state === 'running') {
+        const now = serverNow();
+        return {
+          personal: Math.max(0, (t.personalEndsAt || 0) - now),
+          group: Math.max(0, (t.groupEndsAt || 0) - now),
+          done: t.state === 'ended'
+        };
+      }
+      return {
+        personal: Math.max(0, t.personalRemainingMs != null ? t.personalRemainingMs : currentPersonalMs()),
+        group: Math.max(0, t.groupRemainingMs != null ? t.groupRemainingMs : 0)
+      };
+    }
+
+    // Render the timer UI from the current shared state (uses currentRound config)
+    function renderTimerUI() {
+      const cfg = currentRoundConfig();
+      if (!cfg) return; // not on a round screen — nothing to render
+      const t = groupTimerData;
+      // Only render if this timer state belongs to the round we're on.
+      // (When we enter a new round we reset the timer to that round's name;
+      //  until reset, t.round may still be the previous round.)
+      if (t && t.round && t.round !== currentRound) return;
+      const size = getGroupSize();
+      const personalEl = document.getElementById(cfg.ids.timerPersonal);
+      const groupEl = document.getElementById(cfg.ids.timerGroup);
+      const speakerIdxEl = document.getElementById(cfg.ids.speakerIdx);
+      const btnStart = document.getElementById(cfg.ids.btnStart);
+      const btnNext = document.getElementById(cfg.ids.btnNext);
+      const status = document.getElementById(cfg.ids.timerStatus);
+      if (!personalEl || !groupEl) return;
+
+      const times = computeTimes(t);
+      personalEl.textContent = formatTime(times.personal);
+      groupEl.textContent = formatTime(t && t.state !== 'idle' ? times.group : groupTotalMs(size));
+
+      personalEl.classList.toggle('warning', t && t.state === 'running' && times.personal <= 20000);
+      groupEl.classList.toggle('warning', t && t.state === 'running' && times.group <= 60000);
+
+      if (t && t.speakerIndex != null) {
+        speakerIdxEl.textContent = `${t.speakerIndex + 1} מתוך ${size}`;
+      } else {
+        speakerIdxEl.textContent = '—';
+      }
+
+      const count = t && t.speakerCount != null ? t.speakerCount : 0;
+      const allSpoke = count >= size;
+      const isLastSpeaker = count === size && t && t.state === 'running';
+
+      if (!t || t.state === 'idle' || (t.round && t.round !== currentRound)) {
+        btnStart.style.display = 'inline-flex';
+        btnNext.style.display = 'none';
+        btnNext.disabled = false;
+        status.textContent = '';
+      } else if (allSpoke && t.state !== 'running') {
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = true;
+        status.innerHTML = '✅ כולם/ן דיברו/ות. אפשר להמשיך לשלב הבא.';
+      } else if (isLastSpeaker) {
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = true;
+        status.innerHTML = '🎤 הדובר/ת האחרון/ה. כשהזמן ייגמר נוכל להמשיך.';
+      } else if (t.state === 'paused') {
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = false;
+        status.innerHTML = `⏸️ הזמן האישי של דובר/ת ${t.speakerIndex + 1} הסתיים. לחצו <strong>"הדובר/ת הבא/ה"</strong> כדי להמשיך.`;
+      } else {
+        btnStart.style.display = 'none';
+        btnNext.style.display = 'inline-flex';
+        btnNext.disabled = false;
+        status.textContent = '';
+      }
+
+      if (t && t.state === 'running' && times.personal <= 0) {
+        groupTimerRef.transaction(cur => {
+          if (cur && cur.state === 'running' && (cur.personalEndsAt || 0) <= serverNow()) {
+            beep();
+            return {
+              ...cur,
+              state: 'paused',
+              personalRemainingMs: 0,
+              groupRemainingMs: Math.max(0, (cur.groupEndsAt || 0) - serverNow())
+            };
+          }
+          return;
+        });
+      }
+    }
+
+    // ===== Timer button wiring (shared across Heart/Head/Hands rounds) =====
+    async function startRoundTimer() {
+      if (!firebaseReady || !state.group || !currentRound) return;
+      const size = getGroupSize();
+      const now = serverNow();
+      const personalMs = currentPersonalMs();
+      await groupTimerRef.transaction(cur => {
+        // If this round already ran or is in progress — allow reset if it was a DIFFERENT round
+        if (cur && cur.round === currentRound && cur.state && cur.state !== 'idle') return;
+        return {
+          round: currentRound,
+          personalMs: personalMs,
+          state: 'running',
+          speakerIndex: 0,
+          speakerCount: 1,
+          personalEndsAt: now + personalMs,
+          groupEndsAt: now + (personalMs * size),
+        };
+      });
+    }
+
+    async function nextSpeakerRoundTimer() {
+      if (!firebaseReady || !state.group || !currentRound) return;
+      const size = getGroupSize();
+      const personalMs = currentPersonalMs();
+      await groupTimerRef.transaction(cur => {
+        if (!cur || cur.round !== currentRound) return;
+        const count = (cur.speakerCount || 1);
+        if (count >= size) return;
+        const now = serverNow();
+        let groupRemainingMs;
+        if (cur.state === 'running') {
+          groupRemainingMs = Math.max(0, (cur.groupEndsAt || 0) - now);
+        } else {
+          groupRemainingMs = Math.max(0, cur.groupRemainingMs || 0);
+        }
+        return {
+          round: currentRound,
+          personalMs: personalMs,
+          state: 'running',
+          speakerIndex: (cur.speakerIndex || 0) + 1,
+          speakerCount: count + 1,
+          personalEndsAt: now + personalMs,
+          groupEndsAt: now + groupRemainingMs,
+        };
+      });
+    }
+
+    // Reset the shared timer for the NEXT round (called when entering head/hands).
+    // This nukes the previous round's state so the new round starts clean.
+    async function resetTimerForRound(roundName) {
+      if (!firebaseReady || !state.group) return;
+      const cfg = ROUND_CONFIG[roundName];
+      if (!cfg) return;
+      await db.ref('groups/' + state.group + '/timer').set({
+        round: roundName,
+        personalMs: cfg.personalMs,
+        state: 'idle',
+        speakerCount: 0,
+        personalRemainingMs: cfg.personalMs,
+        groupRemainingMs: 0
+      });
+    }
+
+    // Wire up each round's buttons
+    ['heart','head','hands'].forEach(round => {
+      const cfg = ROUND_CONFIG[round];
+      document.getElementById(cfg.ids.btnStart).addEventListener('click', () => startRoundTimer());
+      document.getElementById(cfg.ids.btnNext).addEventListener('click', () => nextSpeakerRoundTimer());
+      document.getElementById(cfg.ids.btnDone).addEventListener('click', async () => {
+        stopListeningToGroupTimer();
+        if (round === 'hands') {
+          // End of hands → move group to actions screen
+          goToScreen('screen-actions');
+          syncGroupScreen('screen-actions');
+        } else {
+          // Move to next round. Reset timer BEFORE syncing so next-round listeners see clean state.
+          await resetTimerForRound(cfg.nextScreen.replace('screen-',''));
+          setCurrentRound(cfg.nextScreen.replace('screen-',''));
+          goToScreen(cfg.nextScreen);
+          syncGroupScreen(cfg.nextScreen);
+          listenToGroupTimer();
+        }
+      });
+    });
+
+    // ===== Screen 10: Actions — shared practical plans, with volunteer summarizer =====
+    // The screen has 4 states:
+    //   A ("own")       — default; user can write their own OR volunteer to summarize
+    //   B ("wait")      — someone else in the group is summarizing; this user waits
+    //   C ("volunteer") — this user volunteered; writes on behalf of the whole group
+    //   D ("done")      — a group-summary was sent; this user can continue to feedback
+    // Source of truth: /groups/{id}/summarizer = { uid, name, status: 'writing'|'done' }
+
+    const actionsStates = {
+      own: document.getElementById('actions-state-own'),
+      wait: document.getElementById('actions-state-wait'),
+      volunteer: document.getElementById('actions-state-volunteer'),
+      done: document.getElementById('actions-state-done')
+    };
+    function showActionsState(name) {
+      Object.entries(actionsStates).forEach(([k, el]) => {
+        if (el) el.style.display = (k === name) ? 'block' : 'none';
+      });
+    }
+
+    let actionsSubmitted = false;
+    let actionsSummarizerUnsub = null;
+
+    function listenToActionsSummarizer() {
+      if (!firebaseReady || !state.group || actionsSummarizerUnsub) return;
+      const ref = db.ref('groups/' + state.group + '/summarizer');
+      const handler = snap => {
+        const sum = snap.val();
+        if (actionsSubmitted) return; // already submitted own → stay in current view
+        if (!sum) {
+          showActionsState('own');
+        } else if (sum.uid === state.userId) {
+          // I'm the volunteer
+          if (sum.status === 'done') {
+            showActionsState('done');
+            document.getElementById('summarizer-name-done').textContent = sum.name || 'הקבוצה';
+          } else {
+            showActionsState('volunteer');
+          }
+        } else {
+          // Someone else in the group is summarizing
+          if (sum.status === 'done') {
+            showActionsState('done');
+            document.getElementById('summarizer-name-done').textContent = sum.name || '—';
+          } else {
+            showActionsState('wait');
+            document.getElementById('summarizer-name').textContent = sum.name || '—';
+          }
+        }
+      };
+      ref.on('value', handler);
+      actionsSummarizerUnsub = () => ref.off('value', handler);
+    }
+
+    function stopListeningActionsSummarizer() {
+      if (actionsSummarizerUnsub) { actionsSummarizerUnsub(); actionsSummarizerUnsub = null; }
+    }
+
+    // Individual submit — user writes their own action
+    document.getElementById('btn-actions-submit').addEventListener('click', async () => {
+      const text = document.getElementById('actions-text').value.trim();
+      const statusEl = document.getElementById('actions-status');
+      if (!text) {
+        statusEl.textContent = 'כתבו משהו לפני השליחה, או התנדבו לסכם בעבור כולם.';
+        return;
+      }
+      const btn = document.getElementById('btn-actions-submit');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'שולח...';
+      try {
+        if (firebaseReady && state.userId) {
+          await db.ref('actions/' + state.userId).set({
+            text: text,
+            group: state.group || null,
+            role: 'individual',
+            name: state.name || null,
+            submittedAt: firebase.database.ServerValue.TIMESTAMP
+          });
+        }
+        actionsSubmitted = true;
+        statusEl.textContent = 'תודה. אפשר להמשיך כשהקבוצה מוכנה.';
+        // Show "continue" inline for this individual — rendered by converting this section to done state
+        btn.style.display = 'none';
+        document.getElementById('btn-volunteer-summarize').style.display = 'none';
+        const continueBtn = document.createElement('button');
+        continueBtn.type = 'button';
+        continueBtn.className = 'btn';
+        continueBtn.innerHTML = '<i class="fas fa-arrow-left" aria-hidden="true"></i><span>המשיכו</span>';
+        continueBtn.addEventListener('click', () => {
+          goToScreen('screen-feedback');
+          syncGroupScreen('screen-feedback');
+        });
+        btn.parentElement.appendChild(continueBtn);
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'תקלה בשמירה, נסו שוב.';
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'זה המידע שלי';
+      }
+    });
+
+    // Volunteer to summarize — transaction protects against two clicking simultaneously
+    document.getElementById('btn-volunteer-summarize').addEventListener('click', async () => {
+      if (!firebaseReady || !state.group) return;
+      const ref = db.ref('groups/' + state.group + '/summarizer');
+      const result = await ref.transaction(cur => {
+        if (cur && cur.uid) return; // already taken — abort
+        return {
+          uid: state.userId,
+          name: state.name || 'חבר/ת קבוצה',
+          status: 'writing'
+        };
+      });
+      if (!result.committed) {
+        // Someone else volunteered first — listener will switch view to 'wait'
+        return;
+      }
+      // Our listener will flip to 'volunteer' view on the next tick
+    });
+
+    // Volunteer submits on behalf of the group
+    document.getElementById('btn-actions-volunteer-submit').addEventListener('click', async () => {
+      const text = document.getElementById('actions-volunteer-text').value.trim();
+      const statusEl = document.getElementById('actions-volunteer-status');
+      if (!text) {
+        statusEl.textContent = 'כתבו את הסיכום לפני השליחה.';
+        return;
+      }
+      const btn = document.getElementById('btn-actions-volunteer-submit');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'שולח...';
+      try {
+        if (firebaseReady && state.userId) {
+          // Write the group-summary action
+          await db.ref('actions/' + state.userId).set({
+            text: text,
+            group: state.group || null,
+            role: 'group-summary',
+            name: state.name || null,
+            submittedAt: firebase.database.ServerValue.TIMESTAMP
+          });
+          // Mark summarizer as done — this flips all group members to the "done" view
+          await db.ref('groups/' + state.group + '/summarizer').update({ status: 'done' });
+        }
+        // Our own listener flips us to 'done' — no need to do it manually
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'תקלה בשליחה, נסו שוב.';
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'שליחת הסיכום בעבור הקבוצה';
+      }
+    });
+
+    // Continue button — shared for all who reach the "done" view (group-summary flow)
+    document.getElementById('btn-actions-continue').addEventListener('click', () => {
+      stopListeningActionsSummarizer();
+      goToScreen('screen-feedback');
+      syncGroupScreen('screen-feedback');
+    });
+
+    // ===== Screen 11: Feedback (tech experience) =====
+    document.getElementById('btn-feedback-submit').addEventListener('click', async () => {
+      const text = document.getElementById('feedback-text').value.trim();
+      const statusEl = document.getElementById('feedback-status');
+      const btn = document.getElementById('btn-feedback-submit');
+      if (!text) {
+        // Empty submit stays (the user can also just close the tab)
+        statusEl.textContent = 'אין טקסט לשליחה. אם אין מה לכתוב — אפשר פשוט לסגור ולחזור למליאה.';
+        return;
+      }
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'שולח...';
+      try {
+        if (firebaseReady && state.userId) {
+          await db.ref('feedback/' + state.userId).set({
+            text: text,
+            name: state.name || null,
+            group: state.group || null,
+            submittedAt: firebase.database.ServerValue.TIMESTAMP
+          });
+        }
+        statusEl.textContent = 'תודה. חוזרים למליאה 🌿';
+        btn.style.display = 'none';
+        document.getElementById('btn-feedback-skip').style.display = 'none';
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'תקלה בשמירה, נסו שוב.';
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'שליחה';
+      }
+    });
+
+    document.getElementById('btn-feedback-skip').addEventListener('click', () => {
+      document.getElementById('feedback-status').textContent = 'אין בעיה — חוזרים למליאה 🌿';
+      document.getElementById('btn-feedback-submit').style.display = 'none';
+      document.getElementById('btn-feedback-skip').style.display = 'none';
+    });
+
+    // ===== Admin Dashboard =====
+    function isDashboardMode() {
+      const p = new URLSearchParams(location.search);
+      return p.get('dashboard') === 'true' && p.get('key') === ADMIN_KEY;
+    }
+
+    function getDashboardView() {
+      return new URLSearchParams(location.search).get('view') === 'display' ? 'display' : 'control';
+    }
+
+    function updateDashboardTitle() {
+      document.title = document.body.classList.contains('dashboard-display')
+        ? 'תצוגה — מטעינים מחדש'
+        : 'לוח מנחה — מטעינים מחדש';
+    }
+
+    // Toggle button lets Tom switch between Control (management) and Display
+    // (projector) views in-place — URL updates so you can bookmark / keep either
+    // as the tab's permanent mode, but no reload is needed.
+    function setupViewToggle() {
+      const btn = document.getElementById('btn-view-toggle');
+      if (!btn) return;
+      btn.style.display = 'flex';
+
+      const refreshBtn = () => {
+        const isDisplay = document.body.classList.contains('dashboard-display');
+        btn.querySelector('span').textContent = isDisplay ? 'חזרה לניהול' : 'עבור לתצוגה';
+        btn.querySelector('i').className = isDisplay ? 'fas fa-gears' : 'fas fa-display';
+        btn.setAttribute('aria-label', isDisplay ? 'חזרה לתצוגת ניהול' : 'מעבר לתצוגה ציבורית');
+      };
+      refreshBtn();
+
+      btn.addEventListener('click', () => {
+        const nowDisplay = document.body.classList.toggle('dashboard-display');
+        const url = new URL(location.href);
+        if (nowDisplay) url.searchParams.set('view', 'display');
+        else url.searchParams.delete('view');
+        history.replaceState(null, '', url);
+        updateDashboardTitle();
+        refreshBtn();
+      });
+    }
+
+    // Render summary panel — parameterized so the same logic works for
+    // the mood summary, actions summary, and feedback summary panels.
+    function renderSummaryInto(data, emptyId, textId, metaId, statusId) {
+      const emptyEl = document.getElementById(emptyId);
+      const textEl = document.getElementById(textId);
+      const metaEl = document.getElementById(metaId);
+      const statusEl = statusId ? document.getElementById(statusId) : null;
+      if (!emptyEl) return;
+      if (!data) {
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        if (metaEl) metaEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = '';
+        return;
+      }
+      if (data.status === 'pending') {
+        emptyEl.textContent = '⏳ ממתין לסקריפט הסיכום... (ודא ש-summarize.py רץ בטרמינל)';
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        if (metaEl) metaEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = 'בקשה נשלחה, ממתין לסקריפט';
+        return;
+      }
+      if (data.status === 'generating') {
+        emptyEl.textContent = '⚙️ יוצר סיכום... (כ-30 שניות)';
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        if (metaEl) metaEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = 'בתהליך יצירה...';
+        return;
+      }
+      if (data.status === 'ready' && data.text) {
+        emptyEl.style.display = 'none';
+        textEl.textContent = data.text;
+        textEl.style.display = 'block';
+        if (metaEl && data.generatedAt) {
+          const d = new Date(data.generatedAt);
+          metaEl.textContent = 'נוצר ב-' + d.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
+          metaEl.style.display = 'block';
+        }
+        if (statusEl) statusEl.textContent = '✅ הסיכום מוכן';
+        return;
+      }
+      if (data.status === 'error') {
+        emptyEl.textContent = '❌ שגיאה: ' + (data.error || 'לא ידוע');
+        emptyEl.style.display = 'block';
+        textEl.style.display = 'none';
+        if (statusEl) statusEl.textContent = 'שגיאה — בדוק טרמינל Python';
+      }
+    }
+
+    function listenForSummaries() {
+      if (!firebaseReady) return;
+      db.ref('summary').on('value', snap =>
+        renderSummaryInto(snap.val(), 'summary-empty', 'summary-text', 'summary-meta', 'summary-status'));
+      db.ref('moodSummary').on('value', snap =>
+        renderSummaryInto(snap.val(), 'mood-summary-empty', 'mood-summary-text', 'mood-summary-meta', 'mood-summary-status'));
+      db.ref('actionsSummary').on('value', snap =>
+        renderSummaryInto(snap.val(), 'actions-summary-empty', 'actions-summary-text', 'actions-summary-meta', 'actions-summary-status'));
+    }
+
+    // Generic "trigger summary" — kind is 'mood' | 'actions' | 'feedback'.
+    // Writes /{kind}Request with a fresh timestamp; summarize.py polls and fulfills.
+    async function triggerSummary(kind) {
+      if (!firebaseReady) return;
+      const sourcePath = kind === 'mood' ? 'mood' : kind === 'actions' ? 'actions' : 'feedback';
+      const summaryPath = kind === 'mood' ? 'moodSummary' : kind === 'actions' ? 'actionsSummary' : 'summary';
+      const requestPath = kind === 'mood' ? 'moodRequest' : kind === 'actions' ? 'actionsRequest' : 'summaryRequest';
+      const label = kind === 'mood' ? 'משפטי המזג הרגשי' : kind === 'actions' ? 'פעולות' : 'משובים על החוויה';
+
+      const snap = await db.ref(sourcePath).once('value');
+      const all = snap.val() || {};
+      const count = Object.keys(all).length;
+      if (count === 0) {
+        return showToast(`אין עדיין ${label} לסיכום`);
+      }
+      if (!confirm(`לסכם ${count} ${label}? ודא שסקריפט summarize.py רץ בטרמינל.`)) return;
+      await db.ref(summaryPath).set({ status: 'pending', count: count });
+      await db.ref(requestPath).set({
+        requestedAt: firebase.database.ServerValue.TIMESTAMP,
+        requestedBy: 'admin'
+      });
+      showToast('בקשה נשלחה. הסיכום ייווצר תוך ~30 שניות.');
+    }
+
+    function listenAllParticipants() {
+      if (!firebaseReady) return;
+      db.ref('participants').on('value', snap => {
+        state.allParticipants = snap.val() || {};
+        renderDashboard();
+      });
+      db.ref('groups').on('value', snap => {
+        state.allGroups = snap.val() || {};
+        renderDashboard();
+      });
+      // Actions: stream individually — each group's action is small text
+      state.allActions = state.allActions || {};
+      db.ref('actions').on('child_added', snap => {
+        state.allActions[snap.key] = snap.val();
+        renderActionsWall();
+      });
+      db.ref('actions').on('child_changed', snap => {
+        state.allActions[snap.key] = snap.val();
+        renderActionsWall();
+      });
+      db.ref('actions').on('child_removed', snap => {
+        delete state.allActions[snap.key];
+        renderActionsWall();
+      });
+    }
+
+    function renderDashboard() {
+      // Stats
+      const participants = Object.entries(state.allParticipants);
+      document.getElementById('stat-count').textContent = participants.length;
+      document.getElementById('stat-groups').textContent = Object.keys(state.allGroups).length;
+
+      // Participants list
+      const list = document.getElementById('participants-list');
+      list.innerHTML = '';
+      participants.forEach(([uid, p]) => {
+        const div = document.createElement('div');
+        div.className = 'group';
+        const groupBadge = p.group ? `<strong>${escapeHtml(p.group)}</strong>` : '';
+        div.innerHTML = `${groupBadge}${escapeHtml(p.name)}`;
+        list.appendChild(div);
+      });
+
+      // Allocation preview
+      const count = participants.filter(([_, p]) => !p.group).length;
+      const preview = computeGroupsPreview(count);
+      const prevEl = document.getElementById('allocation-preview');
+      if (preview.impossible) {
+        prevEl.style.display = 'block';
+        prevEl.innerHTML = `⚠️ אי אפשר לחלק ${count} משתתפים/ות לקבוצות של 3 או 4 בלבד. צריך 3, 4, 6, 7, 8, 9, 10, 11, 12... (לא 1, 2, 5).`;
+      } else if (count > 0) {
+        prevEl.style.display = 'block';
+        const desc = preview.fours > 0 && preview.threes > 0
+          ? `${preview.fours} קבוצות של 4 + ${preview.threes} קבוצות של 3`
+          : preview.fours > 0 ? `${preview.fours} קבוצות של 4`
+          : `${preview.threes} קבוצות של 3`;
+        prevEl.innerHTML = `ℹ️ ${count} ממתינים/ות לחלוקה → ${desc}`;
+      } else {
+        prevEl.style.display = 'none';
+      }
+
+      renderActionsWall();
+    }
+
+    // Render the actions wall: a card per group showing who wrote what.
+    function renderActionsWall() {
+      const container = document.getElementById('actions-list');
+      if (!container) return;
+      const actions = Object.entries(state.allActions || {});
+      if (actions.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">הפעולות יופיעו כאן ברגע שהקבוצות שולחות</div>';
+        return;
+      }
+      // Sort by group id then submittedAt
+      actions.sort((a, b) => {
+        const ga = parseInt(a[1].group) || 0;
+        const gb = parseInt(b[1].group) || 0;
+        if (ga !== gb) return ga - gb;
+        return (a[1].submittedAt || 0) - (b[1].submittedAt || 0);
+      });
+      container.innerHTML = '';
+      actions.forEach(([uid, a]) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:white;border-radius:12px;padding:14px 16px;box-shadow:0 2px 10px rgba(44,62,80,0.06);border:1px solid var(--bg-cream-dark);';
+        const roleTag = a.role === 'group-summary'
+          ? '<span style="display:inline-block;background:var(--hands);color:white;font-size:0.72rem;padding:2px 8px;border-radius:10px;margin-bottom:6px;">סיכום קבוצתי</span>'
+          : '';
+        const groupBadge = a.group
+          ? `<span style="display:inline-block;background:var(--bg-cream-dark);font-size:0.78rem;padding:2px 8px;border-radius:10px;margin-bottom:6px;margin-inline-end:6px;">קבוצה ${escapeHtml(a.group)}</span>`
+          : '';
+        const name = a.name ? `<div style="font-size:0.85rem;color:var(--text-light);margin-bottom:6px;">— ${escapeHtml(a.name)}</div>` : '';
+        div.innerHTML = `${groupBadge}${roleTag}<div style="font-size:0.93rem;line-height:1.65;white-space:pre-wrap;color:var(--text-dark);">${escapeHtml(a.text)}</div>${name}`;
+        container.appendChild(div);
+      });
+    }
+
+    // Group allocation algorithm (3s and 4s only)
+    function computeGroupsPreview(n) {
+      if (n === 0) return { fours: 0, threes: 0, impossible: false };
+      if (n < 3 || n === 5) return { impossible: true };
+      // Try to maximize 4s
+      for (let fours = Math.floor(n / 4); fours >= 0; fours--) {
+        const rem = n - fours * 4;
+        if (rem === 0) return { fours, threes: 0, impossible: false };
+        if (rem % 3 === 0) return { fours, threes: rem / 3, impossible: false };
+      }
+      return { impossible: true };
+    }
+
+    function fisherYates(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    async function allocateGroups() {
+      if (!firebaseReady) return showToast('Firebase לא מחובר');
+      const snap = await db.ref('participants').once('value');
+      const all = snap.val() || {};
+      const unassigned = Object.entries(all).filter(([_, p]) => !p.group);
+      if (unassigned.length === 0) return showToast('אין משתתפים חדשים לחלק');
+
+      const plan = computeGroupsPreview(unassigned.length);
+      if (plan.impossible) return showToast(`אי אפשר לחלק ${unassigned.length} משתתפים לקבוצות של 3/4`);
+
+      const shuffled = fisherYates(unassigned);
+      const existingGroupCount = Object.keys(state.allGroups).length;
+      const updates = {};
+      let idx = 0, groupIdx = existingGroupCount;
+      const groupSizes = [];
+      for (let i = 0; i < plan.fours; i++) groupSizes.push(4);
+      for (let i = 0; i < plan.threes; i++) groupSizes.push(3);
+
+      for (const size of groupSizes) {
+        const groupId = String(groupIdx + 1); // "1", "2", "3", ...
+        const members = [];
+        for (let k = 0; k < size; k++) {
+          const [uid] = shuffled[idx++];
+          members.push(uid);
+          updates[`participants/${uid}/group`] = groupId;
+        }
+        updates[`groups/${groupId}`] = { members, size, createdAt: firebase.database.ServerValue.TIMESTAMP };
+        groupIdx++;
+      }
+
+      await db.ref().update(updates);
+      showToast(`נוצרו ${groupSizes.length} קבוצות`);
+    }
+
+    async function resetWorkshop() {
+      if (!firebaseReady) return;
+      if (!confirm('לאפס את הסדנה? זה ימחק את כל המשתתפים, הקבוצות, המצב הרגשי, הפעולות והמשוב.')) return;
+      await Promise.all([
+        db.ref('participants').remove(),
+        db.ref('groups').remove(),
+        db.ref('mood').remove(),
+        db.ref('moodRequest').remove(),
+        db.ref('moodSummary').remove(),
+        db.ref('actions').remove(),
+        db.ref('actionsRequest').remove(),
+        db.ref('actionsSummary').remove(),
+        db.ref('feedback').remove(),
+        db.ref('summaryRequest').remove(),
+        db.ref('summary').remove()
+      ]);
+      // Local state reset
+      state.allActions = {};
+      showToast('הסדנה אופסה');
+    }
+
+    // ===== Boot =====
+    (function boot() {
+      const firebaseOk = initFirebase();
+      if (firebaseOk) initServerTimeSync();
+
+      if (!firebaseOk) {
+        showToast('מצב תצוגה: Firebase לא מחובר. הוסף config ב-index.html.', 6000);
+      }
+
+      if (DEBUG) {
+        const banner = document.createElement('div');
+        banner.className = 'debug-banner';
+        banner.textContent = 'DEBUG';
+        document.body.appendChild(banner);
+      }
+
+      // Dashboard mode
+      if (isDashboardMode()) {
+        const view = getDashboardView();
+        if (view === 'display') {
+          document.body.classList.add('dashboard-display');
+        }
+        updateDashboardTitle();
+        showScreen('screen-dashboard');
+        if (firebaseOk) {
+          listenAllParticipants();
+          listenForSummaries();
+        }
+        // Always wire control buttons — they're hidden by CSS in display mode but
+        // still functional after toggling back to control mode.
+        document.getElementById('btn-allocate').addEventListener('click', allocateGroups);
+        document.getElementById('btn-reset').addEventListener('click', resetWorkshop);
+        document.getElementById('btn-summarize-mood').addEventListener('click', () => triggerSummary('mood'));
+        document.getElementById('btn-summarize-actions').addEventListener('click', () => triggerSummary('actions'));
+        document.getElementById('btn-summarize').addEventListener('click', () => triggerSummary('feedback'));
+        setupViewToggle();
+        return;
+      }
+
+      // Participant mode
+      loadIdentity();
+
+      // Debug: jump to screen via ?screen=N
+      const debugScreen = new URLSearchParams(location.search).get('screen');
+      if (debugScreen) {
+        state.name = state.name || 'משתמש בדיקה';
+        showScreen('screen-' + debugScreen);
+        if (['heart','head','hands'].includes(debugScreen)) setCurrentRound(debugScreen);
+        return;
+      }
+
+      // Check if we already have an identity
+      if (state.name && firebaseOk) {
+        // Returning user — check Firebase state
+        db.ref('participants/' + state.userId).once('value').then(snap => {
+          const data = snap.val();
+          if (!data) {
+            // User was reset — start fresh
+            showScreen('screen-welcome');
+            document.getElementById('name-input').value = state.name;
+            return;
+          }
+          state.group = data.group;
+          const savedScreen = identityStorage.getItem('pp-screen');
+          if (data.group) {
+            // Already in a group
+            listenForGroup();
+            updateGroupHeader();
+            if (!savedScreen || savedScreen === 'screen-welcome' || savedScreen === 'screen-waiting') {
+              renderGroupMembers();
+              goToScreen('screen-group');
+            } else {
+              showScreen(savedScreen);
+              if (savedScreen === 'screen-group') renderGroupMembers();
+              if (ROUND_SCREENS.includes(savedScreen)) {
+                setCurrentRound(savedScreen.replace('screen-',''));
+                listenToGroupTimer();
+              }
+              if (savedScreen === 'screen-actions') listenToActionsSummarizer();
+            }
+          } else {
+            // Not allocated yet
+            listenForGroup();
+            goToScreen('screen-waiting');
+          }
+        });
+      } else {
+        showScreen('screen-welcome');
+      }
+    })();
+  </script>
+</body>
+</html>
