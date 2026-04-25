@@ -21,18 +21,35 @@
       --secondary-dark: #5A7A50;
       --accent: #8A7040;
       --heart: #C5625E;
+      --heart-soft: #F5DCD9;
       --head: #5F7B96;
+      --head-soft: #DCE5EC;
       --hands: #6B8E5F;
+      --hands-soft: #DDE8D6;
       --text-dark: #2C3E50;
       --text-medium: #4A5A6B;
       --text-light: #7A8898;
-      --surface: #ffffff;
+      --surface: #FDFCF8;
+      --hairline: rgba(44, 62, 80, 0.08);
       --surface-shadow: rgba(44, 62, 80, 0.06);
       --surface-shadow-strong: rgba(44, 62, 80, 0.14);
+      --elevation-card: 0 1px 2px rgba(44, 62, 80, 0.04), 0 8px 28px rgba(44, 62, 80, 0.07);
+      --elevation-card-hover: 0 2px 4px rgba(44, 62, 80, 0.05), 0 12px 36px rgba(44, 62, 80, 0.10);
+      --elevation-soft: 0 1px 2px rgba(44, 62, 80, 0.03), 0 4px 14px rgba(44, 62, 80, 0.05);
       --radius-sm: 10px;
       --radius-md: 16px;
       --radius-lg: 24px;
       --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
 
     * {
@@ -175,7 +192,7 @@
       border-radius: var(--radius-lg);
       padding: 32px 26px;
       width: 100%;
-      box-shadow: 0 8px 32px var(--surface-shadow), 0 2px 8px var(--surface-shadow);
+      box-shadow: var(--elevation-card);
       text-align: center;
     }
 
@@ -192,13 +209,92 @@
       font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: var(--text-light);
+      color: var(--text-medium);
       text-transform: none;
-      padding: 6px 14px;
-      border-top: 1px solid rgba(44, 62, 80, 0.08);
-      border-bottom: 1px solid rgba(44, 62, 80, 0.08);
-      margin: 0 auto 18px;
+      padding: 7px 18px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      margin: 0 auto 22px;
       max-width: fit-content;
+      position: relative;
+    }
+    .rounds-eyebrow::before,
+    .rounds-eyebrow::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 8px;
+      height: 1px;
+      background: var(--hairline);
+    }
+    .rounds-eyebrow::before { inset-inline-end: 100%; margin-inline-end: 12px; }
+    .rounds-eyebrow::after  { inset-inline-start: 100%; margin-inline-start: 12px; }
+    /* Per-round color hint on the eyebrow */
+    #screen-heart .rounds-eyebrow { color: var(--heart); }
+    #screen-head  .rounds-eyebrow { color: var(--head); }
+    #screen-hands .rounds-eyebrow { color: var(--hands); }
+
+    /* ===== Memorial screen — slower, more dignified entry ===== */
+    #screen-memorial { animation-duration: 0.8s; }
+    #screen-memorial .card { padding-top: 36px; padding-bottom: 36px; }
+    .candle-frame {
+      position: relative;
+      margin: 8px auto 24px;
+      max-width: 140px;
+    }
+    .candle-frame::before {
+      content: "";
+      position: absolute;
+      inset: -20% -20% 0 -20%;
+      background: radial-gradient(ellipse at 50% 30%, rgba(217, 178, 111, 0.35) 0%, rgba(217, 178, 111, 0) 65%);
+      pointer-events: none;
+      animation: candleFlicker 4s ease-in-out infinite;
+    }
+    @keyframes candleFlicker {
+      0%, 100% { opacity: 0.85; transform: scale(1); }
+      50%      { opacity: 1;    transform: scale(1.04); }
+    }
+    .candle-frame img { width: 100%; height: auto; display: block; position: relative; z-index: 1; }
+    .memorial-photo {
+      margin: 0 auto 26px;
+      max-width: 220px;
+    }
+    .memorial-photo img {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+      border: 4px solid var(--surface);
+      box-shadow: 0 0 0 1px rgba(184, 153, 104, 0.25), 0 8px 28px rgba(44, 62, 80, 0.18);
+      display: block;
+    }
+    .memorial-name {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      margin: 0 0 6px;
+    }
+    .memorial-dates {
+      color: var(--text-medium);
+      font-size: 1rem;
+      margin: 0 0 28px;
+      letter-spacing: 0.06em;
+    }
+    .memorial-blessing {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.3rem;
+      font-style: italic;
+      color: var(--primary-dark);
+      margin: 26px 0;
+      letter-spacing: 0.02em;
+    }
+    .memorial-pause {
+      color: var(--text-medium);
+      font-size: 0.95rem;
+      margin: 28px 0 22px;
+      max-width: 28em;
+      margin-inline: auto;
+      line-height: 1.7;
     }
 
     .icon-circle {
@@ -262,8 +358,8 @@
     }
 
     .btn:focus-visible {
-      outline: 3px solid var(--accent);
-      outline-offset: 3px;
+      outline: none;
+      box-shadow: 0 4px 16px rgba(193, 123, 123, 0.35), 0 0 0 3px var(--bg-cream), 0 0 0 5px var(--accent);
     }
 
     .btn.sage {
@@ -556,12 +652,22 @@
       min-height: calc(100dvh - 48px);
     }
 
-    /* Display view (projector) — hide admin panel. */
+    /* Display view (projector) — hide admin panel, scale typography for room visibility. */
     body.dashboard-display .admin-panel { display: none; }
     body.dashboard-display .summary-panel h2,
     body.dashboard-display .mood-panel h2,
-    body.dashboard-display .collage-panel h2 { font-size: 1.6rem; }
-    body.dashboard-display .summary-text { font-size: 1.25rem; line-height: 2; }
+    body.dashboard-display .collage-panel h2 {
+      font-size: 1.9rem;
+      letter-spacing: -0.005em;
+    }
+    body.dashboard-display .summary-text {
+      font-size: 1.5rem;
+      line-height: 1.85;
+      max-width: 64ch;
+      margin-inline: auto;
+    }
+    body.dashboard-display .panel { padding: 36px 32px; }
+    body.dashboard-display .empty-state { font-size: 1.2rem; padding: 60px 30px; }
     /* In display view (audience-facing), the actions wall must be anonymous —
        hide group numbers, names, and "group summary" tags. */
     body.dashboard-display .action-meta { display: none !important; }
@@ -624,17 +730,38 @@
     .panel {
       background: var(--surface);
       border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: 0 6px 24px var(--surface-shadow);
+      padding: 28px 24px 24px;
+      box-shadow: var(--elevation-card);
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow var(--transition-fast);
     }
+    /* Colored top accent bar — semantic per panel type */
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--primary);
+      opacity: 0.85;
+    }
+    .panel.admin-panel::before   { background: var(--primary); }
+    .panel.mood-panel::before    { background: var(--heart); }
+    .panel.collage-panel::before { background: var(--hands); }
+    /* Two summary-panels live at different positions in the grid:
+       4th = actions summary (hands), 5th = feedback summary (head) */
+    .dashboard-grid > .panel.summary-panel:nth-of-type(4)::before { background: var(--hands); }
+    .dashboard-grid > .panel.summary-panel:nth-of-type(5)::before { background: var(--head); }
 
     .panel h2 {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+      font-size: 1.25rem;
+      letter-spacing: -0.005em;
     }
 
     .admin-panel .stats {
@@ -843,17 +970,17 @@
 
     <!-- ===== Screen 4: Memorial (candle + photo + name) ===== -->
     <section id="screen-memorial" class="screen" aria-label="זיכרון">
-      <div class="card" style="text-align:center;">
-        <div style="margin: 8px auto 20px; max-width: 140px;">
-          <img src="assets/candle.png" alt="נר זיכרון" style="width: 100%; height: auto; display: block;">
+      <div class="card">
+        <div class="candle-frame">
+          <img src="assets/candle.png" alt="נר זיכרון" aria-hidden="true">
         </div>
-        <div style="margin: 0 auto 24px; max-width: 220px;">
-          <img src="assets/yemenu.jpg" alt="ימנו בנימין זלקה ז״ל" style="width: 100%; height: auto; border-radius: 50%; border: 4px solid var(--surface); box-shadow: 0 4px 24px var(--surface-shadow-strong); display: block;">
+        <div class="memorial-photo">
+          <img src="assets/yemenu.jpg" alt="ימנו בנימין זלקה ז״ל">
         </div>
-        <h1 style="font-family: 'Frank Ruhl Libre', serif; font-size: 1.5rem; margin: 0 0 4px;">ימנו בנימין זלקה ז״ל</h1>
-        <p style="color: var(--text-medium); font-size: 1rem; margin: 0 0 24px;">2004 — 2026</p>
-        <p style="font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; font-style: italic; color: var(--primary-dark); margin: 24px 0;">יהי זכרו ברוך</p>
-        <p style="color: var(--text-medium); font-size: 0.92rem; margin: 24px 0 20px;">תנו לעצמכם/ן רגע בשקט. כשמוכנים/ות — ממשיכים. כל אחד/ת בקצב שלו/ה.</p>
+        <h1 class="memorial-name">ימנו בנימין זלקה ז״ל</h1>
+        <p class="memorial-dates">2004 — 2026</p>
+        <p class="memorial-blessing">יהי זכרו ברוך</p>
+        <p class="memorial-pause">תנו לעצמכם/ן רגע בשקט. כשמוכנים/ות — ממשיכים. כל אחד/ת בקצב שלו/ה.</p>
         <button type="button" class="btn" id="btn-memorial-next">
           <i class="fas fa-arrow-left" aria-hidden="true"></i>
           <span>ממשיכים</span>
