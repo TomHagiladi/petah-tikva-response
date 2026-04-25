@@ -187,6 +187,20 @@
       margin-bottom: 20px;
     }
 
+    .rounds-eyebrow {
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+      text-transform: none;
+      padding: 6px 14px;
+      border-top: 1px solid rgba(44, 62, 80, 0.08);
+      border-bottom: 1px solid rgba(44, 62, 80, 0.08);
+      margin: 0 auto 18px;
+      max-width: fit-content;
+    }
+
     .icon-circle {
       width: 72px;
       height: 72px;
@@ -856,12 +870,12 @@
         </div>
 
         <div class="instructions-box" style="background: var(--bg-cream-dark); border-right: 4px solid var(--primary);">
-          <p><strong>תבחרו מי יקריא.</strong> אחד/ת מחברי/ות הקבוצה יקריא/תקריא את הטקסט בקול לשאר הקבוצה. כשההקראה מסתיימת — לחצו "קראנו".</p>
+          <p><strong>מי מוכן/ה להקריא?</strong> אחד/ת מחברי/ות הקבוצה יקריא/תקריא את הטקסט בקול לשאר הקבוצה. כשההקראה מסתיימת — לחצו "קראנו".</p>
         </div>
 
         <div class="poem" style="text-align: right; padding: 24px 22px;">
           <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;"><em>ימנו בנימין זלקה ז״ל</em> היה בן 21.</p>
-          <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;">הוא עבד בפיצרייה בפתח תקווה במשך חמש שנים — התחיל כשליח אופניים בגיל 16, בהמשך עבר לאופנוע, ובשנים האחרונות היה אחראי משמרת.</p>
+          <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;">הוא עבד בפיצרייה בפתח תקווה במשך חמש שנים — התחיל כשליח בגיל 16, ובשנים האחרונות היה אחראי משמרת.</p>
           <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 22px;">בליל יום העצמאות האחרון, בתום משמרת, ביקש מקבוצת נערים להפסיק לרסס קצף בתוך הפיצרייה. הם המתינו לו בחוץ כשסיים את המשמרת ודקרו אותו. הוא נפטר מפציעותיו יומיים אחר כך בבית החולים בילינסון. מאות ליוו אותו למנוחות בבית העלמין ירקון.</p>
 
           <blockquote style="margin: 18px 0; padding: 14px 18px; background: var(--surface); border-right: 3px solid var(--primary); border-radius: 6px; text-align: right;">
@@ -940,10 +954,22 @@
     <!-- ===== Screen 7: Heart Round ===== -->
     <section id="screen-heart" class="screen" aria-label="סבב הלב">
       <div class="card">
+        <p class="rounds-eyebrow">סבבי שיתוף ושיח</p>
         <div class="card-header">
           <div class="icon-circle" aria-hidden="true" style="background: #F5DCD9; color: var(--heart);"><i class="fas fa-heart"></i></div>
           <span class="group-badge" style="background: #F5DCD9; color: var(--heart);">סבב 1 מתוך 3</span>
           <h1>סבב הלב</h1>
+        </div>
+
+        <div class="instructions-box">
+          <p style="font-weight:600; color: var(--text-dark); margin-bottom:10px;">לפני שמתחילים: שלושה סבבים לפנינו</p>
+          <p style="color: var(--text-medium); font-size:0.97rem; line-height:1.7; margin-bottom:8px;">בכל סבב ניכנס מזווית אחרת — כדי שתוכלו להתייחס לרובד המתאים בכל פעם:</p>
+          <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.96rem; line-height:1.85;">
+            <li><strong style="color: var(--heart);">💛 סבב הלב</strong> — איפה האירוע נוגע בי כאדם (90 שניות לכל אחד/ת)</li>
+            <li><strong style="color: var(--head);">🧠 סבב הראש</strong> — מה אני מבין/ה ולוקח/ת מזה (2 דקות לכל אחד/ת)</li>
+            <li><strong style="color: var(--hands);">✊ סבב הידיים</strong> — מה אני יוצא/ת לעשות בבית הספר שלי (90 שניות לכל אחד/ת)</li>
+          </ul>
+          <p style="color: var(--text-medium); font-size:0.93rem; line-height:1.65; margin-top:12px;">מתחילים עם הלב.</p>
         </div>
 
         <div class="instructions-box" style="background: #F5DCD9; border-right: 4px solid var(--heart);">
@@ -1004,6 +1030,7 @@
     <!-- ===== Screen 8: Head Round ===== -->
     <section id="screen-head" class="screen" aria-label="סבב הראש">
       <div class="card">
+        <p class="rounds-eyebrow">סבבי שיתוף ושיח</p>
         <div class="card-header">
           <div class="icon-circle" aria-hidden="true" style="background: #DCE5EC; color: var(--head);"><i class="fas fa-brain"></i></div>
           <span class="group-badge" style="background: #DCE5EC; color: var(--head);">סבב 2 מתוך 3</span>
@@ -1067,6 +1094,7 @@
     <!-- ===== Screen 9: Hands Round ===== -->
     <section id="screen-hands" class="screen" aria-label="סבב הידיים">
       <div class="card">
+        <p class="rounds-eyebrow">סבבי שיתוף ושיח</p>
         <div class="card-header">
           <div class="icon-circle" aria-hidden="true" style="background: #DDE8D6; color: var(--hands);"><i class="fas fa-hands-helping"></i></div>
           <span class="group-badge" style="background: #DDE8D6; color: var(--hands);">סבב 3 מתוך 3 · האחרון</span>
@@ -1158,7 +1186,7 @@
 
           <button type="button" class="btn" id="btn-actions-submit">
             <i class="fas fa-paper-plane" aria-hidden="true"></i>
-            <span>זה המידע שלי</span>
+            <span>שלח</span>
           </button>
           <p class="hint" id="actions-status" style="min-height:1.3em;"></p>
         </div>
@@ -1987,21 +2015,13 @@
             submittedAt: firebase.database.ServerValue.TIMESTAMP
           });
         }
-        statusEl.textContent = 'תודה. אפשר להמשיך.';
-        btn.style.display = 'none';
-        const continueBtn = document.createElement('button');
-        continueBtn.type = 'button';
-        continueBtn.className = 'btn';
-        continueBtn.innerHTML = '<i class="fas fa-arrow-left" aria-hidden="true"></i><span>המשיכו</span>';
-        continueBtn.addEventListener('click', () => {
-          goToScreen('screen-feedback');
-        });
-        btn.parentElement.appendChild(continueBtn);
+        statusEl.textContent = '';
+        goToScreen('screen-feedback');
       } catch (err) {
         console.error(err);
         statusEl.textContent = 'תקלה בשמירה, נסו שוב.';
         btn.disabled = false;
-        btn.querySelector('span').textContent = 'זה המידע שלי';
+        btn.querySelector('span').textContent = 'שלח';
       }
     });
 
@@ -2021,7 +2041,7 @@
       statusEl.style.background = 'var(--bg-cream-dark)';
       statusEl.style.borderRadius = 'var(--radius-md)';
       statusEl.style.marginTop = '16px';
-      statusEl.textContent = 'תגובתך התקבלה. תודה — מייד ממשיכים במליאה.';
+      statusEl.textContent = 'תגובתך התקבלה. תודה — מייד ממשיכים במליאה. ניתן לסגור את האפליקציה.';
     }
 
     document.getElementById('btn-feedback-submit').addEventListener('click', async () => {
