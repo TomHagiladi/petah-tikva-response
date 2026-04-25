@@ -421,6 +421,23 @@
       text-decoration: underline;
     }
 
+    /* ===== Gender-aware text =====
+       Mark direct-address phrases with <span class="gm">male form</span><span class="gf">female form</span>.
+       Body class set on welcome submit hides the wrong one. Until selected, both are hidden
+       (prevents double rendering on the welcome screen itself). */
+    body:not(.gender-male):not(.gender-female) .gm,
+    body:not(.gender-male):not(.gender-female) .gf { display: none; }
+    body.gender-male .gf { display: none; }
+    body.gender-female .gm { display: none; }
+
+    /* Selected gender option visual feedback */
+    .gender-option:hover { background: var(--bg-cream-dark) !important; }
+    .gender-option:has(input:checked) {
+      border-color: var(--primary) !important;
+      background: var(--bg-cream-dark) !important;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
     /* ===== Instructions boxes ===== */
     .instructions-box {
       width: 100%;
@@ -531,6 +548,9 @@
     body.dashboard-display .mood-panel h2,
     body.dashboard-display .collage-panel h2 { font-size: 1.6rem; }
     body.dashboard-display .summary-text { font-size: 1.25rem; line-height: 2; }
+    /* In display view (audience-facing), the actions wall must be anonymous —
+       hide group numbers, names, and "group summary" tags. */
+    body.dashboard-display .action-meta { display: none !important; }
 
     /* Floating toggle between control and display dashboard views */
     .view-toggle-btn {
@@ -748,13 +768,26 @@
           <p class="lead">לזכרו של ימנו בנימין זלקה ז״ל</p>
         </div>
         <p>במקור, הסדנה הזו תוכננה לעסוק במעבר מתקופת המלחמה חזרה לשגרה.</p>
-        <p>בליל יום העצמאות האחרון — כאן בעיר שלנו — נדקר <strong>ימנו בנימין זלקה ז״ל</strong>, ונפטר מפצעיו יומיים אחר כך. החלטנו להקדיש את המפגש כולו לעיבוד האירוע הזה. מתוך ההקשר הזה נדבר בהמשך גם על בינה מלאכותית: כיצד היא יכולה לתווך תהליכים קבוצתיים כמו זה שאנחנו עוברים/ות כרגע.</p>
-        <p style="color: var(--text-medium); font-size: 0.95rem;">הסדנה תתנהל כולה דרך הטלפון שלכם/ן, בקבוצות של 3-4. <strong>כל ההוראות יופיעו מסך אחרי מסך</strong> — אין צורך להתאמץ לעקוב. פשוט קראו את מה שכתוב ופעלו לפיו.</p>
+        <p>בליל יום העצמאות האחרון — כאן בעיר שלנו — נדקר <strong>ימנו בנימין זלקה ז״ל</strong>, ונפטר מפצעיו יומיים אחר כך. החלטנו להקדיש את חלקו הראשון של המפגש לעיבוד האירוע הזה. מתוך ההקשר הזה נדבר בהמשך גם על בינה מלאכותית: כיצד היא יכולה להוות תשתית לתהליכים קבוצתיים.</p>
+        <p style="color: var(--text-medium); font-size: 0.95rem;">הסדנה תתנהל כולה דרך הטלפון שלך, בקבוצות של 3-4. <strong>כל ההוראות יופיעו מסך אחרי מסך</strong> — אין צורך להתאמץ לעקוב. פשוט <span class="gm">קרא</span><span class="gf">קראי</span> את מה שכתוב <span class="gm">ופעל</span><span class="gf">ופעלי</span> לפיו.</p>
         <form id="form-welcome">
           <div class="input-group">
             <label for="name-input">השם המלא שלך</label>
             <input type="text" id="name-input" name="name" placeholder="לדוגמה: רונית כהן" autocomplete="name" required minlength="2">
           </div>
+          <fieldset class="gender-group" style="border:none; padding:0; margin: 8px 0 16px;">
+            <legend style="font-weight: 500; color: var(--text-medium); font-size: 0.95rem; margin-bottom: 8px;">איך לפנות אליך?</legend>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <label class="gender-option" style="display:flex; align-items:center; gap:8px; padding:12px 14px; border:2px solid rgba(44,62,80,0.12); border-radius:var(--radius-md); cursor:pointer; background: var(--bg-cream); transition: var(--transition);">
+                <input type="radio" name="gender" value="male" required style="accent-color: var(--primary);">
+                <span>בלשון זכר</span>
+              </label>
+              <label class="gender-option" style="display:flex; align-items:center; gap:8px; padding:12px 14px; border:2px solid rgba(44,62,80,0.12); border-radius:var(--radius-md); cursor:pointer; background: var(--bg-cream); transition: var(--transition);">
+                <input type="radio" name="gender" value="female" required style="accent-color: var(--primary);">
+                <span>בלשון נקבה</span>
+              </label>
+            </div>
+          </fieldset>
           <button type="submit" class="btn" id="btn-submit-name">
             <i class="fas fa-arrow-left" aria-hidden="true"></i>
             <span>הצטרפות</span>
@@ -771,7 +804,7 @@
           <h1>ממתינים לכולם</h1>
           <p class="lead" id="waiting-name">שלום, <span></span></p>
         </div>
-        <p>ברגע שכל המשתתפים/ות יירשמו, תקבלו את הקבוצה שלכם/ן.</p>
+        <p>ברגע שכל המשתתפים/ות יירשמו, <span class="gm">תקבל</span><span class="gf">תקבלי</span> את הקבוצה שלך.</p>
         <p class="hint">עוד מעט מתחילים.</p>
       </div>
     </section>
@@ -785,7 +818,7 @@
           <h1>הקבוצה שלך נוצרה</h1>
         </div>
         <ul class="member-list" id="group-members-list" aria-label="חברי הקבוצה"></ul>
-        <p>מצאו זה את זו/ה בחדר. קחו כוס שתייה, שבו יחד בפינה נעימה. לא חייבים/ות כלום עוד — רק להתיישב.</p>
+        <p>מצאו זה את זו/ה בחדר. קחו כוס שתייה, שבו יחד בפינה נעימה.</p>
         <p style="color: var(--text-medium); font-size: 0.92rem;">כשכולכם/ן מוכנים/ות, מישהו/י אחד/ת מכם/ן לוחצ/ת על הכפתור. כולכם/ן תתקדמו יחד לשלב הבא.</p>
         <button type="button" class="btn sage" id="btn-group-ready">
           <i class="fas fa-check" aria-hidden="true"></i>
@@ -806,7 +839,7 @@
         <h1 style="font-family: 'Frank Ruhl Libre', serif; font-size: 1.5rem; margin: 0 0 4px;">ימנו בנימין זלקה ז״ל</h1>
         <p style="color: var(--text-medium); font-size: 1rem; margin: 0 0 24px;">2004 — 2026</p>
         <p style="font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; font-style: italic; color: var(--primary-dark); margin: 24px 0;">יהי זכרו ברוך</p>
-        <p style="color: var(--text-medium); font-size: 0.92rem; margin: 24px 0 20px;">תנו לעצמכם/ן רגע בשקט. כשכולכם/ן מוכנים/ות — ממשיכים יחד.</p>
+        <p style="color: var(--text-medium); font-size: 0.92rem; margin: 24px 0 20px;">תנו לעצמכם/ן רגע בשקט. כשמוכנים/ות — ממשיכים. כל אחד/ת בקצב שלו/ה.</p>
         <button type="button" class="btn" id="btn-memorial-next">
           <i class="fas fa-arrow-left" aria-hidden="true"></i>
           <span>ממשיכים</span>
@@ -828,7 +861,7 @@
 
         <div class="poem" style="text-align: right; padding: 24px 22px;">
           <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;"><em>ימנו בנימין זלקה ז״ל</em> היה בן 21.</p>
-          <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;">הוא עבד בפיצה האט ברחוב העצמאות בפתח תקווה במשך חמש שנים — התחיל כשליח על אופנוע בגיל 16, ובשנים האחרונות היה אחראי משמרת.</p>
+          <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 14px;">הוא עבד בפיצרייה בפתח תקווה במשך חמש שנים — התחיל כשליח אופניים בגיל 16, בהמשך עבר לאופנוע, ובשנים האחרונות היה אחראי משמרת.</p>
           <p style="font-size: 1.05rem; line-height: 1.9; margin-bottom: 22px;">בליל יום העצמאות האחרון, בתום משמרת, ביקש מקבוצת נערים להפסיק לרסס קצף בתוך הפיצרייה. הם המתינו לו בחוץ כשסיים את המשמרת ודקרו אותו. הוא נפטר מפציעותיו יומיים אחר כך בבית החולים בילינסון. מאות ליוו אותו למנוחות בבית העלמין ירקון.</p>
 
           <blockquote style="margin: 18px 0; padding: 14px 18px; background: var(--surface); border-right: 3px solid var(--primary); border-radius: 6px; text-align: right;">
@@ -872,25 +905,25 @@
           <h1>איפה אני כרגע?</h1>
         </div>
         <p>לפני שנפתח שיחה, רגע פרטי.</p>
-        <p><strong>כתבו במשפט או שניים את התחושה שלכם/ן ברגע הזה.</strong> לא על האירוע — על איך אתם/ן נכנסים/ות למפגש הזה. המזג הפנימי שאיתו באתם/ן.</p>
+        <p><strong><span class="gm">כתוב</span><span class="gf">כתבי</span> במשפט או שניים את התחושה שלך ברגע הזה.</strong> לא על האירוע — על איך <span class="gm">אתה נכנס</span><span class="gf">את נכנסת</span> למפגש הזה. המזג הפנימי שאיתו <span class="gm">באת</span><span class="gf">באת</span>.</p>
 
         <div class="instructions-box" style="background: var(--bg-cream-dark); border-right: 4px solid var(--primary);">
           <p style="font-weight: 600; margin-bottom: 6px;">הכתיבה אנונימית.</p>
-          <p style="font-size: 0.92rem; color: var(--text-medium);">חברי/ות הקבוצה שלכם/ן לא יראו את זה, וזה לא יוקרן במליאה. תום יראה את כל המשפטים יחד, ללא שמות, וישלח אותם לסיכום רגשי של קבוצת המנהלים/ות כולה.</p>
+          <p style="font-size: 0.92rem; color: var(--text-medium);">חברי/ות הקבוצה שלך לא יראו את זה, וזה לא יוקרן במליאה. תום יראה את כל המשפטים יחד, ללא שמות, וישלח אותם לסיכום רגשי של קבוצת המנהלים/ות כולה.</p>
         </div>
 
         <details style="margin: 14px 0; color: var(--text-medium);">
-          <summary style="cursor: pointer; font-size: 0.92rem; color: var(--primary-dark);">דוגמאות לאמירות אפשריות (פתחו לעיון)</summary>
+          <summary style="cursor: pointer; font-size: 0.92rem; color: var(--primary-dark);">דוגמאות לאמירות אפשריות (לחיצה לעיון)</summary>
           <ul style="margin: 12px 0 0 0; padding-inline-start: 22px; font-size: 0.92rem; line-height: 1.8;">
-            <li>"אני עוד לא מעכל/ת."</li>
-            <li>"אני כועס/ת."</li>
+            <li><span class="gm">"אני עוד לא מעכל."</span><span class="gf">"אני עוד לא מעכלת."</span></li>
+            <li><span class="gm">"אני כועס."</span><span class="gf">"אני כועסת."</span></li>
             <li>"משהו בי כבה."</li>
-            <li>"אני מרגיש/ה חסר/ת אונים."</li>
+            <li><span class="gm">"אני מרגיש חסר אונים."</span><span class="gf">"אני מרגישה חסרת אונים."</span></li>
             <li>"קשה לי להיות כאן היום."</li>
-            <li>"אני מודאג/ת לנוער."</li>
-            <li>"יש בי כאב שאני לא יודע/ת לנסח."</li>
+            <li><span class="gm">"אני מודאג לנוער."</span><span class="gf">"אני מודאגת לנוער."</span></li>
+            <li><span class="gm">"יש בי כאב שאני לא יודע לנסח."</span><span class="gf">"יש בי כאב שאני לא יודעת לנסח."</span></li>
           </ul>
-          <p style="font-size: 0.88rem; color: var(--text-light); margin-top: 10px;">אלה רק דוגמאות — כתבו מה שבאמת עולה בכם/ן.</p>
+          <p style="font-size: 0.88rem; color: var(--text-light); margin-top: 10px;">אלה רק דוגמאות — <span class="gm">כתוב</span><span class="gf">כתבי</span> מה שבאמת עולה בך.</p>
         </details>
 
         <textarea id="mood-text" rows="4" placeholder="המזג הפנימי שלי כרגע..." aria-label="המזג הרגשי שלי"
@@ -1097,7 +1130,7 @@
       </div>
     </section>
 
-    <!-- ===== Screen 10: Actions (share practical plans) ===== -->
+    <!-- ===== Screen 10: Actions (share practical plans — individual only) ===== -->
     <section id="screen-actions" class="screen" aria-label="שיתוף הפעולות">
       <div class="card">
         <div class="card-header">
@@ -1105,10 +1138,9 @@
           <h1>מה אני הולך/ת לעשות</h1>
         </div>
 
-        <!-- State A: no one is summarizing → user writes their own OR volunteers -->
         <div id="actions-state-own">
-          <p>הסבב נגמר. עכשיו — לשתף פרקטית.</p>
-          <p><strong>כתבו טכני. מפורט. מעשי.</strong> ככל שתהיו ספציפיים/ות יותר — כך זה בעל ערך רב יותר לקולגות שלכם/ן המתלבטים/ות מה לצאת לעשות.</p>
+          <p>הסבב נגמר. עכשיו — לשתף פרקטית. כל אחד/ת כותב/ת לעצמו/ה.</p>
+          <p><strong><span class="gm">כתוב</span><span class="gf">כתבי</span> טכני. מפורט. מעשי.</strong> ככל <span class="gm">שתהיה ספציפי</span><span class="gf">שתהיי ספציפית</span> יותר — כך זה בעל ערך רב יותר לקולגות שלך המתלבטים/ות מה לצאת לעשות.</p>
 
           <details style="margin: 12px 0;">
             <summary style="cursor: pointer; font-size: 0.92rem; color: var(--primary-dark);">דוגמאות לניסוחים מדויקים (פתחו לעיון)</summary>
@@ -1128,58 +1160,7 @@
             <i class="fas fa-paper-plane" aria-hidden="true"></i>
             <span>זה המידע שלי</span>
           </button>
-
-          <div style="background: var(--bg-cream-dark); border-radius: var(--radius-md); padding: 14px 16px; margin-top: 16px;">
-            <p style="font-size: 0.92rem; color: var(--text-medium); margin-bottom: 10px;">במקום זה — אחד/ת מחברי/ות הקבוצה יכול/ה לכתוב סיכום משותף בעבור כולם/ן.</p>
-            <button type="button" class="btn secondary small" id="btn-volunteer-summarize">
-              <i class="fas fa-pen-to-square" aria-hidden="true"></i>
-              <span>אני מתנדב/ת לסכם בעבור כולנו</span>
-            </button>
-          </div>
           <p class="hint" id="actions-status" style="min-height:1.3em;"></p>
-        </div>
-
-        <!-- State B: someone else in the group is summarizing → this user waits -->
-        <div id="actions-state-wait" style="display:none;">
-          <div class="instructions-box" style="background: var(--bg-cream-dark); border-right: 4px solid var(--primary); text-align: center;">
-            <p style="font-weight: 600; color: var(--text-dark); font-size: 1.1rem; margin-bottom: 8px;">
-              <span id="summarizer-name">—</span> כותב/ת את הסיכום בעבור הקבוצה שלכם/ן.
-            </p>
-            <p style="font-size: 0.95rem; color: var(--text-medium);">ממתינים/ות בשקט. ברגע שהסיכום נשלח — יופיע כפתור להמשיך יחד למסך הבא.</p>
-          </div>
-          <button type="button" class="btn" disabled style="opacity: 0.5; cursor: not-allowed;">
-            <i class="fas fa-hourglass-half" aria-hidden="true"></i>
-            <span>ממתין/ה</span>
-          </button>
-        </div>
-
-        <!-- State C: this user volunteered to summarize → writes for the group -->
-        <div id="actions-state-volunteer" style="display:none;">
-          <p><strong>את/ה כותב/ת את הסיכום בעבור הקבוצה.</strong></p>
-          <p style="color: var(--text-medium); font-size: 0.95rem;">סכמו את מה שחברי/ות הקבוצה אמרו בסבב הידיים — מה כל אחד/ת הולך/ת לעשות בבית הספר שלו/ה. כתבו טכני, מפורט, מעשי. ציינו שם לצד כל פעולה כדי שכל אחד/ת יזוהה.</p>
-
-          <textarea id="actions-volunteer-text" rows="6" placeholder="למשל:&#10;רונית — תקיים שיח צוות מחנכים/ות מחר בבוקר על האירוע.&#10;דני — יזמן את עובד/ת הקידום לנוער לישיבה השבוע.&#10;..." aria-label="סיכום הפעולות של הקבוצה"
-                    style="width:100%; padding:14px; border:2px solid rgba(44,62,80,0.12); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 180px; background: var(--bg-cream); color: var(--text-dark); box-sizing: border-box; margin: 12px 0;"></textarea>
-
-          <button type="button" class="btn" id="btn-actions-volunteer-submit">
-            <i class="fas fa-paper-plane" aria-hidden="true"></i>
-            <span>שליחת הסיכום בעבור הקבוצה</span>
-          </button>
-          <p class="hint" id="actions-volunteer-status" style="min-height:1.3em;"></p>
-        </div>
-
-        <!-- State D: group is done, ready to continue -->
-        <div id="actions-state-done" style="display:none;">
-          <div class="instructions-box" style="background: #DDE8D6; border-right: 4px solid var(--hands); text-align: center;">
-            <p style="font-weight: 600; color: var(--text-dark); font-size: 1.05rem;">
-              <i class="fas fa-check-circle" aria-hidden="true" style="color: var(--hands);"></i>
-              הסיכום של הקבוצה נשלח ע"י <span id="summarizer-name-done">—</span>.
-            </p>
-          </div>
-          <button type="button" class="btn" id="btn-actions-continue">
-            <i class="fas fa-arrow-left" aria-hidden="true"></i>
-            <span>המשיכו למסך הבא</span>
-          </button>
         </div>
       </div>
     </section>
@@ -1191,16 +1172,16 @@
           <div class="icon-circle gold" aria-hidden="true"><i class="fas fa-comment-dots"></i></div>
           <h1>חוזרים למליאה</h1>
         </div>
-        <p>כאן נגמר החלק הקבוצתי. <strong>חזרו למליאה.</strong> תום יצפה לכם/ן שם.</p>
+        <p>כאן נגמר החלק הקבוצתי. <strong>חזרו למליאה.</strong> תום מחכה לכם/ן שם.</p>
         <p>בזמן שכולם/ן מתאספים/ות — רגע אחד לפני שמתחילים את החלק השני.</p>
 
-        <p><strong>כתבו כמה מילים על החוויה עצמה של השימוש בטכנולוגיה.</strong> לא על התוכן (זה נשאר בקבוצה) אלא על החוויה:</p>
+        <p><strong><span class="gm">כתוב</span><span class="gf">כתבי</span> כמה מילים על החוויה עצמה של השימוש בטכנולוגיה.</strong> לא על התוכן (זה נשאר בקבוצה) אלא על החוויה:</p>
         <ul style="margin-inline-start:20px; color: var(--text-medium); font-size:0.96rem; line-height:1.8;">
-          <li>מה דעתכם/ן על הטכנולוגיה כמובילה של שיח קבוצתי?</li>
-          <li>מה דעתכם/ן על האיזון שהיה בין שיחה אנושית פנים אל פנים בקבוצה, לבין השימוש בטכנולוגיה ובמסכים?</li>
+          <li><span class="gm">מה דעתך</span><span class="gf">מה דעתך</span> על הטכנולוגיה כמובילה של שיח קבוצתי?</li>
+          <li>מה דעתך על האיזון שהיה בין שיחה אנושית פנים אל פנים בקבוצה, לבין השימוש בטכנולוגיה ובמסכים?</li>
           <li>מה עבד? מה הפריע? מה חסר?</li>
         </ul>
-        <p style="color: var(--text-medium); font-size: 0.9rem;">מה שתכתבו/ן כאן יהיה הבסיס לחלק השני של המפגש: <em>איך בונים מערכות כאלה, איך נכון להשתמש בבינה מלאכותית להנחיית תהליכים קבוצתיים.</em></p>
+        <p style="color: var(--text-medium); font-size: 0.9rem;">מה <span class="gm">שתכתוב</span><span class="gf">שתכתבי</span> כאן יהיה הבסיס לחלק השני של המפגש: <em>איך בונים מערכות כאלה, איך נכון להשתמש בבינה מלאכותית להנחיית תהליכים קבוצתיים.</em></p>
 
         <textarea id="feedback-text" rows="5" placeholder="המחשבות שלי על החוויה..." aria-label="טקסט משוב על החוויה"
                   style="width:100%; padding:14px; border:2px solid rgba(44,62,80,0.12); border-radius: var(--radius-md); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 140px; background: var(--bg-cream); color: var(--text-dark); box-sizing: border-box; margin: 12px 0;"></textarea>
@@ -1433,31 +1414,46 @@
     function loadIdentity() {
       let id = identityStorage.getItem('pp-userId');
       let name = identityStorage.getItem('pp-name');
+      let gender = identityStorage.getItem('pp-gender');
       if (!id) {
         id = uuid();
         identityStorage.setItem('pp-userId', id);
       }
       state.userId = id;
       state.name = name;
+      state.gender = gender;
+      applyGenderClass(gender);
     }
 
     function saveIdentity() {
       identityStorage.setItem('pp-userId', state.userId);
       identityStorage.setItem('pp-name', state.name);
+      if (state.gender) identityStorage.setItem('pp-gender', state.gender);
     }
 
     function resetIdentity() {
       identityStorage.removeItem('pp-userId');
       identityStorage.removeItem('pp-name');
+      identityStorage.removeItem('pp-gender');
       identityStorage.removeItem('pp-screen');
     }
 
-    async function registerParticipant(name) {
+    function applyGenderClass(gender) {
+      document.body.classList.remove('gender-male', 'gender-female');
+      if (gender === 'male' || gender === 'female') {
+        document.body.classList.add('gender-' + gender);
+      }
+    }
+
+    async function registerParticipant(name, gender) {
       state.name = name;
+      state.gender = gender;
       saveIdentity();
+      applyGenderClass(gender);
       if (firebaseReady) {
         await db.ref('participants/' + state.userId).set({
           name: name,
+          gender: gender || null,
           joinedAt: firebase.database.ServerValue.TIMESTAMP,
           group: null,
           currentScreen: 'waiting'
@@ -1581,12 +1577,18 @@
     document.getElementById('form-welcome').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('name-input').value.trim();
+      const genderInput = document.querySelector('input[name="gender"]:checked');
       if (name.length < 2) return;
+      if (!genderInput) {
+        showToast('בחרו איך לפנות אליכם — בלשון זכר או נקבה');
+        return;
+      }
+      const gender = genderInput.value;
       const btn = document.getElementById('btn-submit-name');
       btn.disabled = true;
       btn.querySelector('span').textContent = 'רגע...';
       try {
-        await registerParticipant(name);
+        await registerParticipant(name, gender);
       } catch (err) {
         console.error(err);
         showToast('תקלה ברישום, נסו שוב');
@@ -1604,10 +1606,9 @@
       syncGroupScreen('screen-memorial');
     });
 
-    // Screen 4: memorial next — group-synced
+    // Screen 4: memorial next — INDIVIDUAL (each person at their own pace)
     document.getElementById('btn-memorial-next').addEventListener('click', () => {
       goToScreen('screen-memory');
-      syncGroupScreen('screen-memory');
     });
 
     // Screen 5: memory next — group-synced
@@ -1962,70 +1963,15 @@
       });
     });
 
-    // ===== Screen 10: Actions — shared practical plans, with volunteer summarizer =====
-    // The screen has 4 states:
-    //   A ("own")       — default; user can write their own OR volunteer to summarize
-    //   B ("wait")      — someone else in the group is summarizing; this user waits
-    //   C ("volunteer") — this user volunteered; writes on behalf of the whole group
-    //   D ("done")      — a group-summary was sent; this user can continue to feedback
-    // Source of truth: /groups/{id}/summarizer = { uid, name, status: 'writing'|'done' }
+    // ===== Screen 10: Actions — individual practical plans only =====
+    // Each user writes their own action. After submit, a "continue" button appears
+    // and they advance individually to the feedback screen.
 
-    const actionsStates = {
-      own: document.getElementById('actions-state-own'),
-      wait: document.getElementById('actions-state-wait'),
-      volunteer: document.getElementById('actions-state-volunteer'),
-      done: document.getElementById('actions-state-done')
-    };
-    function showActionsState(name) {
-      Object.entries(actionsStates).forEach(([k, el]) => {
-        if (el) el.style.display = (k === name) ? 'block' : 'none';
-      });
-    }
-
-    let actionsSubmitted = false;
-    let actionsSummarizerUnsub = null;
-
-    function listenToActionsSummarizer() {
-      if (!firebaseReady || !state.group || actionsSummarizerUnsub) return;
-      const ref = db.ref('groups/' + state.group + '/summarizer');
-      const handler = snap => {
-        const sum = snap.val();
-        if (actionsSubmitted) return; // already submitted own → stay in current view
-        if (!sum) {
-          showActionsState('own');
-        } else if (sum.uid === state.userId) {
-          // I'm the volunteer
-          if (sum.status === 'done') {
-            showActionsState('done');
-            document.getElementById('summarizer-name-done').textContent = sum.name || 'הקבוצה';
-          } else {
-            showActionsState('volunteer');
-          }
-        } else {
-          // Someone else in the group is summarizing
-          if (sum.status === 'done') {
-            showActionsState('done');
-            document.getElementById('summarizer-name-done').textContent = sum.name || '—';
-          } else {
-            showActionsState('wait');
-            document.getElementById('summarizer-name').textContent = sum.name || '—';
-          }
-        }
-      };
-      ref.on('value', handler);
-      actionsSummarizerUnsub = () => ref.off('value', handler);
-    }
-
-    function stopListeningActionsSummarizer() {
-      if (actionsSummarizerUnsub) { actionsSummarizerUnsub(); actionsSummarizerUnsub = null; }
-    }
-
-    // Individual submit — user writes their own action
     document.getElementById('btn-actions-submit').addEventListener('click', async () => {
       const text = document.getElementById('actions-text').value.trim();
       const statusEl = document.getElementById('actions-status');
       if (!text) {
-        statusEl.textContent = 'כתבו משהו לפני השליחה, או התנדבו לסכם בעבור כולם.';
+        statusEl.textContent = 'כתבו משהו לפני השליחה.';
         return;
       }
       const btn = document.getElementById('btn-actions-submit');
@@ -2041,18 +1987,14 @@
             submittedAt: firebase.database.ServerValue.TIMESTAMP
           });
         }
-        actionsSubmitted = true;
-        statusEl.textContent = 'תודה. אפשר להמשיך כשהקבוצה מוכנה.';
-        // Show "continue" inline for this individual — rendered by converting this section to done state
+        statusEl.textContent = 'תודה. אפשר להמשיך.';
         btn.style.display = 'none';
-        document.getElementById('btn-volunteer-summarize').style.display = 'none';
         const continueBtn = document.createElement('button');
         continueBtn.type = 'button';
         continueBtn.className = 'btn';
         continueBtn.innerHTML = '<i class="fas fa-arrow-left" aria-hidden="true"></i><span>המשיכו</span>';
         continueBtn.addEventListener('click', () => {
           goToScreen('screen-feedback');
-          syncGroupScreen('screen-feedback');
         });
         btn.parentElement.appendChild(continueBtn);
       } catch (err) {
@@ -2063,73 +2005,31 @@
       }
     });
 
-    // Volunteer to summarize — transaction protects against two clicking simultaneously
-    document.getElementById('btn-volunteer-summarize').addEventListener('click', async () => {
-      if (!firebaseReady || !state.group) return;
-      const ref = db.ref('groups/' + state.group + '/summarizer');
-      const result = await ref.transaction(cur => {
-        if (cur && cur.uid) return; // already taken — abort
-        return {
-          uid: state.userId,
-          name: state.name || 'חבר/ת קבוצה',
-          status: 'writing'
-        };
-      });
-      if (!result.committed) {
-        // Someone else volunteered first — listener will switch view to 'wait'
-        return;
-      }
-      // Our listener will flip to 'volunteer' view on the next tick
-    });
-
-    // Volunteer submits on behalf of the group
-    document.getElementById('btn-actions-volunteer-submit').addEventListener('click', async () => {
-      const text = document.getElementById('actions-volunteer-text').value.trim();
-      const statusEl = document.getElementById('actions-volunteer-status');
-      if (!text) {
-        statusEl.textContent = 'כתבו את הסיכום לפני השליחה.';
-        return;
-      }
-      const btn = document.getElementById('btn-actions-volunteer-submit');
-      btn.disabled = true;
-      btn.querySelector('span').textContent = 'שולח...';
-      try {
-        if (firebaseReady && state.userId) {
-          // Write the group-summary action
-          await db.ref('actions/' + state.userId).set({
-            text: text,
-            group: state.group || null,
-            role: 'group-summary',
-            name: state.name || null,
-            submittedAt: firebase.database.ServerValue.TIMESTAMP
-          });
-          // Mark summarizer as done — this flips all group members to the "done" view
-          await db.ref('groups/' + state.group + '/summarizer').update({ status: 'done' });
-        }
-        // Our own listener flips us to 'done' — no need to do it manually
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'תקלה בשליחה, נסו שוב.';
-        btn.disabled = false;
-        btn.querySelector('span').textContent = 'שליחת הסיכום בעבור הקבוצה';
-      }
-    });
-
-    // Continue button — shared for all who reach the "done" view (group-summary flow)
-    document.getElementById('btn-actions-continue').addEventListener('click', () => {
-      stopListeningActionsSummarizer();
-      goToScreen('screen-feedback');
-      syncGroupScreen('screen-feedback');
-    });
-
     // ===== Screen 11: Feedback (tech experience) =====
+    function showFeedbackThankYou() {
+      // Hide the form (textarea + buttons) and show a clean thank-you message.
+      const ta = document.getElementById('feedback-text');
+      if (ta) ta.style.display = 'none';
+      document.getElementById('btn-feedback-submit').style.display = 'none';
+      document.getElementById('btn-feedback-skip').style.display = 'none';
+      const statusEl = document.getElementById('feedback-status');
+      statusEl.style.fontSize = '1.05rem';
+      statusEl.style.fontWeight = '600';
+      statusEl.style.color = 'var(--primary-dark)';
+      statusEl.style.textAlign = 'center';
+      statusEl.style.padding = '20px';
+      statusEl.style.background = 'var(--bg-cream-dark)';
+      statusEl.style.borderRadius = 'var(--radius-md)';
+      statusEl.style.marginTop = '16px';
+      statusEl.textContent = 'תגובתך התקבלה. תודה — מייד ממשיכים במליאה.';
+    }
+
     document.getElementById('btn-feedback-submit').addEventListener('click', async () => {
       const text = document.getElementById('feedback-text').value.trim();
       const statusEl = document.getElementById('feedback-status');
       const btn = document.getElementById('btn-feedback-submit');
       if (!text) {
-        // Empty submit stays (the user can also just close the tab)
-        statusEl.textContent = 'אין טקסט לשליחה. אם אין מה לכתוב — אפשר פשוט לסגור ולחזור למליאה.';
+        statusEl.textContent = 'אין טקסט לשליחה. אם אין מה לכתוב — לחצו "דילוג".';
         return;
       }
       btn.disabled = true;
@@ -2143,9 +2043,7 @@
             submittedAt: firebase.database.ServerValue.TIMESTAMP
           });
         }
-        statusEl.textContent = 'תודה. חוזרים למליאה 🌿';
-        btn.style.display = 'none';
-        document.getElementById('btn-feedback-skip').style.display = 'none';
+        showFeedbackThankYou();
       } catch (err) {
         console.error(err);
         statusEl.textContent = 'תקלה בשמירה, נסו שוב.';
@@ -2155,9 +2053,7 @@
     });
 
     document.getElementById('btn-feedback-skip').addEventListener('click', () => {
-      document.getElementById('feedback-status').textContent = 'אין בעיה — חוזרים למליאה 🌿';
-      document.getElementById('btn-feedback-submit').style.display = 'none';
-      document.getElementById('btn-feedback-skip').style.display = 'none';
+      showFeedbackThankYou();
     });
 
     // ===== Admin Dashboard =====
@@ -2373,12 +2269,12 @@
         const div = document.createElement('div');
         div.style.cssText = 'background:white;border-radius:12px;padding:14px 16px;box-shadow:0 2px 10px rgba(44,62,80,0.06);border:1px solid var(--bg-cream-dark);';
         const roleTag = a.role === 'group-summary'
-          ? '<span style="display:inline-block;background:var(--hands);color:white;font-size:0.72rem;padding:2px 8px;border-radius:10px;margin-bottom:6px;">סיכום קבוצתי</span>'
+          ? '<span class="action-meta" style="display:inline-block;background:var(--hands);color:white;font-size:0.72rem;padding:2px 8px;border-radius:10px;margin-bottom:6px;">סיכום קבוצתי</span>'
           : '';
         const groupBadge = a.group
-          ? `<span style="display:inline-block;background:var(--bg-cream-dark);font-size:0.78rem;padding:2px 8px;border-radius:10px;margin-bottom:6px;margin-inline-end:6px;">קבוצה ${escapeHtml(a.group)}</span>`
+          ? `<span class="action-meta" style="display:inline-block;background:var(--bg-cream-dark);font-size:0.78rem;padding:2px 8px;border-radius:10px;margin-bottom:6px;margin-inline-end:6px;">קבוצה ${escapeHtml(a.group)}</span>`
           : '';
-        const name = a.name ? `<div style="font-size:0.85rem;color:var(--text-light);margin-bottom:6px;">— ${escapeHtml(a.name)}</div>` : '';
+        const name = a.name ? `<div class="action-meta" style="font-size:0.85rem;color:var(--text-light);margin-bottom:6px;">— ${escapeHtml(a.name)}</div>` : '';
         div.innerHTML = `${groupBadge}${roleTag}<div style="font-size:0.93rem;line-height:1.65;white-space:pre-wrap;color:var(--text-dark);">${escapeHtml(a.text)}</div>${name}`;
         container.appendChild(div);
       });

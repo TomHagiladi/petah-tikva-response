@@ -22,6 +22,13 @@ import requests
 from google import genai
 from google.genai import types
 
+# Force UTF-8 stdout so Hebrew + emoji work on Windows cp1252 terminals.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 DB_URL = "https://petah-tikva-response-2026-default-rtdb.europe-west1.firebasedatabase.app"
 MODEL = "gemini-2.5-flash"
 POLL_SECONDS = 3
@@ -167,13 +174,31 @@ def generate_summary(pipeline_name, items_text):
 #  Main loop
 # ===========================================================================
 
+def safe_print(*args, **kwargs):
+    """Print that never raises — Windows terminals sometimes can't encode chars."""
+    kwargs.setdefault("flush", True)
+    try:
+        print(*args, **kwargs)
+    except Exception:
+        try:
+            msg = " ".join(str(a) for a in args).encode("ascii", "replace").decode("ascii")
+            print(msg, **kwargs)
+        except Exception:
+            pass
+
+
 def process_pipeline(pipeline_name, last_seen):
-    """Check a single pipeline for a new request. Returns updated last_seen."""
+    """Check a single pipeline for a new request. Returns updated last_seen.
+
+    CRITICAL: Once we observe a new requested_at, we mark it as seen immediately
+    and never re-process it — even if the rest of the processing fails. Otherwise
+    a single failure (e.g. encoding error in a print) creates an infinite loop.
+    """
     cfg = PIPELINES[pipeline_name]
     try:
         req = fetch(cfg["request_path"])
     except Exception as e:
-        print(f"  [{cfg['label']}] שגיאה בקריאת בקשה: {e}", flush=True)
+        safe_print(f"  [{cfg['label']}] שגיאה בקריאת בקשה: {e}")
         return last_seen
 
     if not (req and isinstance(req, dict)):
@@ -183,58 +208,69 @@ def process_pipeline(pipeline_name, last_seen):
     if not requested_at or requested_at == last_seen:
         return last_seen
 
-    # New request!
-    print(f"\n[{cfg['label']}] בקשה חדשה (ts={requested_at})", flush=True)
-    try:
-        items = fetch(cfg["source_path"]) or {}
-    except Exception as e:
-        print(f"  [{cfg['label']}] שגיאה בשליפת נתונים: {e}", flush=True)
-        return requested_at  # mark as seen even on error so we don't retry infinitely
+    # MARK AS SEEN IMMEDIATELY — never re-process the same request.
+    new_last_seen = requested_at
 
-    if not items:
-        print(f"  [{cfg['label']}] אין עדיין טקסטים לסיכום", flush=True)
+    try:
+        safe_print(f"\n[{cfg['label']}] בקשה חדשה (ts={requested_at})")
+
         try:
-            put(cfg["target_path"], {"status": "error", "error": "אין עדיין טקסטים"})
+            items = fetch(cfg["source_path"]) or {}
+        except Exception as e:
+            safe_print(f"  [{cfg['label']}] שגיאה בשליפת נתונים: {e}")
+            try:
+                put(cfg["target_path"], {"status": "error", "error": str(e)[:200]})
+            except Exception:
+                pass
+            return new_last_seen
+
+        if not items:
+            safe_print(f"  [{cfg['label']}] אין עדיין טקסטים לסיכום")
+            try:
+                put(cfg["target_path"], {"status": "error", "error": "אין עדיין טקסטים"})
+            except Exception:
+                pass
+            return new_last_seen
+
+        text = build_items_text(items)
+        count = len([v for v in items.values() if (v or {}).get("text")])
+        safe_print(f"  [{cfg['label']}] נמצאו {count} טקסטים, שולח ל-Gemini...")
+
+        try:
+            put(cfg["target_path"], {"status": "generating"})
         except Exception:
             pass
-        return requested_at
 
-    text = build_items_text(items)
-    count = len([v for v in items.values() if (v or {}).get("text")])
-    print(f"  [{cfg['label']}] נמצאו {count} טקסטים, שולח ל-Gemini...", flush=True)
-
-    try:
-        put(cfg["target_path"], {"status": "generating"})
-    except Exception:
-        pass
-
-    try:
-        summary = generate_summary(pipeline_name, text)
-    except Exception as e:
-        print(f"  [{cfg['label']}] שגיאת Gemini: {e}", flush=True)
         try:
-            put(cfg["target_path"], {"status": "error", "error": str(e)[:200]})
-        except Exception:
-            pass
-        return requested_at
+            summary = generate_summary(pipeline_name, text)
+        except Exception as e:
+            safe_print(f"  [{cfg['label']}] שגיאת Gemini: {e}")
+            try:
+                put(cfg["target_path"], {"status": "error", "error": str(e)[:200]})
+            except Exception:
+                pass
+            return new_last_seen
 
-    try:
-        put(
-            cfg["target_path"],
-            {
-                "status": "ready",
-                "text": summary,
-                "generatedAt": int(time.time() * 1000),
-                "count": count,
-            },
-        )
+        try:
+            put(
+                cfg["target_path"],
+                {
+                    "status": "ready",
+                    "text": summary,
+                    "generatedAt": int(time.time() * 1000),
+                    "count": count,
+                },
+            )
+        except Exception as e:
+            safe_print(f"  [{cfg['label']}] שגיאה בכתיבת הסיכום: {e}")
+            return new_last_seen
+
+        safe_print(f"  [{cfg['label']}] OK נכתב ({len(summary)} תווים)")
+        safe_print(f"--- {cfg['label']} ---\n{summary}\n---")
     except Exception as e:
-        print(f"  [{cfg['label']}] שגיאה בכתיבת הסיכום: {e}", flush=True)
-        return requested_at
+        safe_print(f"  [{cfg['label']}] שגיאה לא צפויה: {e}")
 
-    print(f"  [{cfg['label']}] ✅ נכתב ({len(summary)} תווים):", flush=True)
-    print(f"--- {cfg['label']} ---\n{summary}\n---", flush=True)
-    return requested_at
+    return new_last_seen
 
 
 def main():
