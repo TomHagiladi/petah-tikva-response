@@ -32,8 +32,15 @@ curl -X DELETE "https://petah-tikva-response-2026-default-rtdb.europe-west1.fire
 # סקריפט סיכום — חייב לרוץ בטרמינל בזמן הסדנה (GEMINI_API_KEY נדרש בסביבה)
 python summarize.py
 
+# סימולציית עומס end-to-end — 32 משתתפים מסומלצים, מאמת 3 pipelines של Gemini
+python simulate.py            # ניקוי + רישום + 3 pipelines
+python simulate.py --resume   # מדלג על ניקוי/רישום/חלוקה, מתחיל מ-mood
+
 # פריסה: push ל-main של GitHub repo `TomHagiladi/petah-tikva-response` מתעדכן ב-Pages תוך ~1-2 דק'
 git push   # → https://tomhagiladi.github.io/petah-tikva-response/
+
+# חזרה לעיצוב הקודם (לפני design polish של 25.4.2026)
+git reset --hard pre-design-overhaul && git push --force origin main
 ```
 
 אין build step, אין lint, אין tests. SPA קובץ יחיד.
@@ -137,3 +144,33 @@ volunteer-summarizer flow was removed — every participant now writes their own
 - **battery slider + 3 character images** — הוחלף בכתיבה אנונימית של "המזג הרגשי" (טקסט חופשי שעובר ל-Gemini).
 - **שיר "לובשת שגרה"** — לא רלוונטי כאן; הוחלף במסך זיכרון של ימנו.
 - **`done` screen** — אין מסך סיום נפרד. מסך המשוב הוא האחרון; אחרי שליחה הוא מתחלף להודעת תודה.
+
+## Testing — `simulate.py`
+
+[`simulate.py`](simulate.py) מסמלץ end-to-end: 32 משתתפים (16 גברים + 16 נשים, שמות עבריים אמיתיים), חלוקה לקבוצות, שליחת 32 טקסטים אמיתיים בעברית לכל אחד מ-3 ה-pipelines (mood/actions/feedback), והמתנה לסיכומי Gemini.
+
+**עוצר ידנית בכל שלב חשוב:**
+1. אחרי ניקוי+רישום — תום לוחץ "חלוקה לקבוצות" בדשבורד, אז Enter בטרמינל
+2. אחרי שליחת mood — תום לוחץ "צור סיכום מזג רגשי", Enter, ממתין ל-`/moodSummary.status==ready`
+3. אותו דבר ל-actions ו-feedback
+
+**`--resume`**: מדלג על ניקוי/רישום/חלוקה. שימושי אם תום עצר באמצע (Ctrl+C לא מזיק — הנתונים נשארים ב-DB).
+
+**מה לא נבדק דרך הסקריפט**: race conditions של הטיימר המסונכרן (דורש דפדפנים אמיתיים), CSS rendering, התנהגות מובייל. רק ה-data flow + Gemini prompts.
+
+## Design polish (תויג כ-`pre-design-overhaul` לפני)
+
+ב-25.4.2026 בוצע סבב polish לעיצוב, **ללא שינוי תוכן/לוגיקה**. אם תום מבקש לחזור לעיצוב הפשוט:
+
+```bash
+git reset --hard pre-design-overhaul && git push --force origin main
+```
+
+**עיקרי השינויים שנשמרים אם לא חוזרים אחורה:**
+
+- **CSS tokens חדשים**: `--elevation-card`, `--elevation-card-hover`, `--elevation-soft` (צללים מרובי-שכבות), `--hairline`, `--heart-soft`/`--head-soft`/`--hands-soft`, `--surface = #FDFCF8` (warm off-white במקום pure white).
+- **`prefers-reduced-motion`**: media query גלובלי שמשבית כל animation/transition.
+- **`.rounds-eyebrow`**: ה-"סבבי שיתוף ושיח" מקבל קווי-חיבור דקיקים בצדדים, וצבע מותאם לסבב (`#screen-heart .rounds-eyebrow { color: var(--heart) }` וכו').
+- **מסך הזיכרון**: כל ה-inline styles הוחלפו במחלקות סמנטיות — `.candle-frame` (עם הילה רוטטת `candleFlicker` 4s), `.memorial-photo` (טבעת זהב עדינה), `.memorial-name`, `.memorial-blessing`, `.memorial-pause`. `#screen-memorial` יש לו animation-duration: 0.8s במקום ה-default 0.35s.
+- **דשבורד `.panel`**: כל panel מקבל פס עליון 3px (`::before`) בצבע סמנטי — admin=primary, mood=heart, collage=hands, summary-panel:nth-of-type(4)=hands (פעולות), summary-panel:nth-of-type(5)=head (משוב). שיניתי ל-`overflow:hidden` כדי שה-bar ייצמד לקצה.
+- **Display view**: `.summary-text` 1.5rem (במקום 1.25), כותרות 1.9rem (במקום 1.6), `max-width: 64ch` ל-line length על מקרן.
