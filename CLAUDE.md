@@ -52,20 +52,23 @@ git push   # → https://tomhagiladi.github.io/petah-tikva-response/
 ### Firebase Realtime Database schema
 
 ```
-/participants/{userId}      = { name, joinedAt, group, currentScreen, readyAt? }
-/groups/{groupId}           = { members[], size, createdAt, currentScreen, timer, summarizer? }
+/participants/{userId}      = { name, gender: 'male'|'female', joinedAt, group, currentScreen, readyAt? }
+/groups/{groupId}           = { members[], size, createdAt, currentScreen, timer }
 /groups/{id}/timer          = { round: 'heart'|'head'|'hands', personalMs, state, speakerIndex, speakerCount, personalEndsAt, groupEndsAt, ... }
-/groups/{id}/summarizer     = { uid, name, status: 'writing'|'done' }
 /mood/{uid}                 = { text, group, submittedAt }
 /moodRequest                = { requestedAt, requestedBy }
 /moodSummary                = { status: 'pending'|'generating'|'ready'|'error', text, generatedAt, count }
-/actions/{uid}              = { text, group, role: 'individual'|'group-summary', name, submittedAt }
+/actions/{uid}              = { text, group, role: 'individual', name, submittedAt }
 /actionsRequest             = { requestedAt, requestedBy }
 /actionsSummary             = { status, text, generatedAt, count }
 /feedback/{uid}             = { text, name, group, submittedAt }
 /summaryRequest             = { requestedAt, requestedBy }
 /summary                    = { status, text, generatedAt, count }
 ```
+
+(Note: `/groups/{id}/summarizer` and the `role: 'group-summary'` variant existed in an earlier
+revision when each group could nominate a single member to write on everyone's behalf. The
+volunteer-summarizer flow was removed — every participant now writes their own action.)
 
 ### Group-level screen sync
 "מצאנו ואנחנו מוכנים", "ממשיכים", "קראנו", "סיימנו ממשיכים" — לחיצה של חבר/ת קבוצה אחד/ת מקדמת את כל הקבוצה.
@@ -81,17 +84,17 @@ git push   # → https://tomhagiladi.github.io/petah-tikva-response/
 
 **Personal durations:** Heart = 90s, Head = 120s, Hands = 90s.
 
-### Actions Screen — Volunteer Summarizer Pattern
+### Actions Screen — Individual-Only
 
-מסך הפעולות (screen 10) מגיע עם ארבעה מצבים:
-- **own** — ברירת מחדל: המשתתפ/ת יכול/ה לכתוב משלו/ה, או ללחוץ "אני מתנדב/ת לסכם בעבור כולנו"
-- **wait** — מישהו/י אחר/ת בקבוצה כבר התנדב/ה; המשתתפ/ת רואה/ת את שמו/ה וממתינ/ה
-- **volunteer** — המשתתפ/ת ה*זה*/*זאת* התנדב/ה; מקבל/ת textarea גדול/ה לכתיבה בעבור הקבוצה
-- **done** — הסיכום הקבוצתי נשלח; כל חברי/ות הקבוצה רואים/ות כפתור "המשיכו"
+כל משתתפ/ת כותב/ת לעצמו/ה את הפעולה הפרקטית שיוצא/ת לעשות. אין יותר אופציה של "אני מתנדב/ת לסכם בעבור כולנו" (היא הוסרה אחרי שתום החליט שעדיף שכל אחד/ת יכתבו לבד). אחרי שליחה — נוצר דינמית כפתור "המשיכו" שמעביר אישית למסך המשוב. הכותרת `אפשרות א/ב` והבלוק של state-wait/state-volunteer/state-done הוסרו לחלוטין מה-DOM.
 
-**Race safety:** הלחיצה על "אני מתנדב/ת לסכם" מתבצעת ב-transaction על `/groups/{id}/summarizer`. אם מישהו/י אחר/ת הקדים/ה — החוזה לא מחויב והלקוח שלנו עובר ל-wait.
+### Gender-Aware UI (.gm / .gf)
 
-**Skip for individuals:** משתתפ/ת שכתב/ה משלו/ה (role='individual') מקבל/ת כפתור "המשיכו" מיידי אחרי השליחה. משתתפ/ת שהתנדב/ה וסיים/ה (role='group-summary', status='done') — כל חברי/ות הקבוצה רואים/ות את אותו כפתור.
+לאחר שהמשתמש/ת בוחר/ת זכר/נקבה במסך הרישום, ה-body מקבל class `gender-male` או `gender-female`. CSS מסתיר את הצורה הלא-נכונה של כל טקסט שמסומן ב-`<span class="gm">צורת זכר</span><span class="gf">צורת נקבה</span>`. עד שהמגדר נבחר — שתי הצורות מוסתרות (כדי שלא תופיע כפילות לפני הרישום).
+
+הסיווג נשמר ב-localStorage (`pp-gender`) וב-Firebase (`participants/{uid}/gender`). על boot, `loadIdentity()` קורא ל-`applyGenderClass(gender)` לשחזור.
+
+**איפה השתמשתי במנגנון:** ברוכים הבאים, ממתינים, מסך המזג הרגשי (כולל הדוגמאות), מסך הפעולות, מסך המשוב. שאר המקומות (כותרות הסבבים, הוראות לקבוצה, ציטוטים) נשארים בצורה הדו-לשונית "מנהלים/ות" / "דובר/ת" כי הם מתייחסים לכלל הקבוצה ולא לפנייה אישית.
 
 ### למה אין base64 ב-RTDB כאן
 האתר הקיים (pitah-tikva-principals) העלה תמונות כ-base64 ב-RTDB. **האתר הזה לא משתמש בתמונות משתתפים** — ה-actions נשלפים כטקסט בלבד. יחסית נקי, לא נדרש Blaze plan. 40 משתתפים × ~500 תווי טקסט = זעיר.
@@ -102,7 +105,7 @@ git push   # → https://tomhagiladi.github.io/petah-tikva-response/
 
 ## תלויות חיצוניות
 
-- **Firebase config** מוטמע ב-`index.html`. **הפרויקט עדיין לא נוצר** — יש placeholder `REPLACE_ME` שם. תום יצטרך ליצור את הפרויקט `petah-tikva-response-2026` ב-console.firebase.google.com (Spark plan, region europe-west1, Realtime Database test mode 30 יום), ולהדביק את ה-config.
+- **Firebase project** — `petah-tikva-response-2026` נוצר ב-25.4.2026 (Spark plan, europe-west1, RTDB test mode 30 יום). config מלא מוטמע ב-`index.html`. ה-rules פתוחות לקריאה/כתיבה ללא auth — מתאים לסדנה חד-פעמית.
 - **ADMIN_KEY** קבוע ב-`index.html` = `'petah-zikaron-2026'`. שינוי דורש עדכון הלינק שתום שומר.
 - **Gemini API** — שלושת הסיכומים (mood, actions, feedback) דורשים `summarize.py` לרוץ על הלפטופ של תום בזמן הסדנה. `GEMINI_API_KEY` חייב להיות ב-env. המפתח **לא** מוטמע ב-index.html.
   - הגבלת IP הוסרה זמנית (כמו בפרויקט הקיים) — ה-ISP של תום מחלף IP דינמית.
@@ -110,18 +113,27 @@ git push   # → https://tomhagiladi.github.io/petah-tikva-response/
 ## Gotchas שנשמרו / חדשים
 
 - **גודל קבוצה 5 בלתי אפשרי** — אלגוריתם `computeGroupsPreview()` תומך רק ב-3/4. הדשבורד מציג אזהרה עבור 1, 2, 5.
-- **Chrome ב-Windows ו-`start`** — query strings (`?dashboard=true&key=...`) מתבלבלים. חייב לפתוח דרך chrome.exe ישירות.
-- **שפה**: **דו-לשוניות מגדרית בכל טקסט** — "מנהלים/ות", "דובר/ת", "את/ה", "לכם/ן". אין טקסט שלא פונה לשני המגדרים.
+- **Chrome ב-Windows ו-`start`** — query strings (`?dashboard=true&key=...` ו-`?fresh=1`) מתבלבלים. Windows מפרש את ה-`?` כחלק משם הקובץ ולא כפרמטר. חייב לפתוח דרך chrome.exe ישירות:
+  ```bash
+  "C:/Program Files/Google/Chrome/Application/chrome.exe" --new-window "file:///.../index.html?fresh=1"
+  ```
+- **שפה**: דו-לשוניות מגדרית עבור כל טקסט שמתייחס לכלל הקבוצה ("מנהלים/ות", "דובר/ת"). פניות אישיות ישירות (welcome, mood prompt, actions prompt, feedback prompt) מותאמות מגדרית דרך `.gm`/`.gf` spans + body class — ראה "Gender-Aware UI" למעלה.
 - **איסור פרסום**: החשודים ברצח הם קטינים; האפליקציה **לא** מזכירה אותם. הטקסט של מסך 5 בנוי בכוונה על ציטוטי אנשים שאהבו את ימנו.
 - **שמירה על כבוד המשפחה**: לא לדבר בשמם; רק הציטוט "מרוסקים ושבורי לב" ו"ילד טהור ותמים".
-- **Gemini thinking=0**: כבוי (כמו בפרויקט הקיים — אחרת hebrew מתחתך באמצע משפט).
-- **מצב Fresh (debug)** — `?fresh=1` מחליף `localStorage` ב-`sessionStorage`. קריטי לבדיקות רב-משתמש במחשב אחד.
-- **summarize.py** — צריך לרוץ *לפני* שתום לוחץ על אחד מכפתורי הסיכום. אם לא רץ — הסטטוס נתקע ב-`pending`.
+- **Gemini thinking=0**: כבוי (כמו בפרויקט הקיים — אחרת עברית נחתכת באמצע משפט).
+- **summarize.py — UTF-8 stdout חובה** (Windows-specific gotcha חמור): טרמינל cp1252 לא יודע לקודד תווים כמו ✅. בעבר זה גרם לסקריפט להיתקע בלולאה אינסופית — `print(✅)` היה זורק אחרי שהסיכום נוצר אבל לפני ש-`last_seen` עודכן, אז אותה בקשה עובדה שוב ושוב לנצח. הפתרון:
+  1. הסקריפט מבצע `sys.stdout.reconfigure(encoding="utf-8")` בעלייה.
+  2. כל ה-prints עטופים ב-`safe_print()` שלעולם לא זורק.
+  3. `last_seen` מתעדכן **מיד** כשמזהים בקשה חדשה — לפני כל עבודה כבדה.
 
-## שלב הבא (לבנייה בפועל)
+  אם תוסיף/י pipeline נוסף, חשוב לשמור על העקרון: סמן כ-seen מיד, עטוף הכל ב-try/except, השתמש/י ב-`safe_print` לא ב-`print`.
+- **summarize.py polling** — צריך לרוץ *לפני* שתום לוחץ על אחד מכפתורי הסיכום. אם לא רץ והוא לחץ — הסטטוס נתקע ב-`pending`. כשמתחילים את הסקריפט הוא מסמן את ה-requestedAt הקיים כ"כבר ראיתי" כדי לא לעבד בקשות ישנות. הפתרון אם זה קרה: למחוק `/{kind}Request` וללחוץ שוב מהדשבורד.
+- **מצב Fresh (debug)** — `?fresh=1` מחליף `localStorage` ב-`sessionStorage`. קריטי לבדיקות רב-משתמש במחשב אחד; כל חלון Chrome חדש (`--new-window`) שנפתח עם `?fresh=1` נחשב משתמש שונה.
+- **Display view = anonymous** — כשמסך התצוגה (למקרן) מציג את קיר הפעולות, שמות ומספרי קבוצות מוסתרים אוטומטית דרך CSS rule `body.dashboard-display .action-meta { display: none }`. אם תוסיף/י metadata חדש — תן לו class `action-meta` כדי שיוסתר באותה תצוגה.
 
-1. ✅ כל הקוד מוכן במקומי.
-2. יש ליצור את פרויקט Firebase וה-GitHub repo (הוראות מפורטות ב-README).
-3. להדביק את ה-Firebase config ב-index.html.
-4. לדחוף ל-GitHub → GitHub Pages.
-5. לבדוק multi-user עם `?fresh=1`.
+## דברים שלא נמצאים בפרויקט אבל היו בסדנה הקודמת (pitah-tikva-principals)
+
+- **base64 photo upload + collage wall** — הוסר כי האירוע לא מתאים לעידוד צילום סלפי.
+- **battery slider + 3 character images** — הוחלף בכתיבה אנונימית של "המזג הרגשי" (טקסט חופשי שעובר ל-Gemini).
+- **שיר "לובשת שגרה"** — לא רלוונטי כאן; הוחלף במסך זיכרון של ימנו.
+- **`done` screen** — אין מסך סיום נפרד. מסך המשוב הוא האחרון; אחרי שליחה הוא מתחלף להודעת תודה.
